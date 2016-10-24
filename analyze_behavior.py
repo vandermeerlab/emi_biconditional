@@ -10,7 +10,8 @@ output_filepath = os.path.join(thisdir, 'plots')
 
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
-    sessions.append(os.path.join(data_filepath, file))
+    if file[0] == '!':
+        sessions.append(os.path.join(data_filepath, file))
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
 
@@ -28,7 +29,7 @@ for session in sessions:
 
 only_sound = False
 
-if 0:
+if 1:
     for rat in rats:
         if only_sound:
             filename = 'sound_rat' + rat + '_behavior.png'
@@ -39,9 +40,9 @@ if 0:
 
 if 1:
     filenames = ['group1_behavior.png', 'group2_behavior.png',
-                 'all-rats_behavior.png', 'rats_behavior.png']
+                 'all-rats_behavior.png', 'exp-rats_behavior.png']
     sound_filenames = ['sound_group1_behavior.png', 'sound_group2_behavior.png',
-                       'sound_all-rats_behavior.png', 'sound_rats_behavior.png']
+                       'sound_all-rats_behavior.png', 'sound_exp-rats_behavior.png']
     rat_groups = [['1', '3', '5', '7'], ['2', '4', '6', '8'], rats, ['1', '2', '3', '5', '6', '7', '8']]
 
     for i, rat in enumerate(rat_groups):

@@ -35,14 +35,14 @@ def plot_behavior(data, rats, n_sessions, filepath=None, only_sound=False):
     else:
         colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac"]
 
-    g = sns.FacetGrid(data=df, col="measure", sharey=False, size=3, aspect=1.5)
+    g = sns.FacetGrid(data=df, col="measure", sharey=False, size=3, aspect=1.)
     g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="condition", value="value", color=colours)
     g.set_axis_labels("Session", "Value")
     for ax, label in zip(g.axes[0], ["Durations", "Numbers", "Latency", "Responses"]):
         ax.set_title("")
         ax.set_ylabel(label)
     plt.tight_layout()
-    plt.legend(bbox_to_anchor=(1.3, 1.))
+    plt.legend(bbox_to_anchor=(1.5, 1.))
     if filepath is not None:
         plt.savefig(filepath, bbox_inches='tight')
     else:

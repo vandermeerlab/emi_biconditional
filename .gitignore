@@ -3,6 +3,7 @@ Thumbs.db
 .DS_Store
 .idea/
 _build
+__pycache__
 build
 dist
 *.eggs/

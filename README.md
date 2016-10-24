@@ -14,9 +14,7 @@ Workflow
 ========
 
 * Pull emi_biconditional.
-* Set up directory structure. `cache\\data` and `plots` folders within emi_biconditional.
-* Get MedPC data from the server. Put training data files in `<emi_biconditional> 
-<cache> <data>` folder.
+* Get MedPC data from the server. Put training data files in `emi_biconditional\\cache\\data` folder.
 
 ## Specific analyses
 
@@ -38,7 +36,10 @@ analysis work flow.
 The main objective of this task was to determine whether subjects are able to 
 learn a biconditional discrimination in a reasonable amount of time. 
 
-Each session contained 32 trials (8 of each type; with a total of 16 rewarded and 16 unrewarded trials). There was an average 4 min intertrial interval (range from 2.5 min to 5.5 min). Each cue (light or sound) was presented for 10 s, with a 5 s delay between cues. Two sessions were run daily during the light cycle; one beginning at 7am, the other ending at 7pm.
+Each session contained 32 trials (8 of each type; with a total of 16 rewarded and 16 unrewarded trials). 
+There was an average 4 min intertrial interval (range from 2.5 min to 5.5 min).
+Each cue (light or sound) was presented for 10 s, with a 5 s delay between cues. 
+Two sessions were run daily during the light cycle; one beginning at 7am, the other ending at 7pm.
 
 Cues in this experiment were:
 * light1: steady cue light
