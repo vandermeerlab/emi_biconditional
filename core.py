@@ -18,6 +18,8 @@ def assign_label(data):
     """
     mag_start = np.array(data[1])
     mag_end = np.array(data[2])
+    if len(mag_start) > len(mag_end):
+        mag_start = np.array(data[1][:-1])
     pel_start = np.array(data[3])
     pel_end = pel_start + 1
     light1_start = np.array(data[4])
