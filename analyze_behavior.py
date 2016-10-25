@@ -7,7 +7,7 @@ from plotting import plot_behavior
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data')
 output_filepath = os.path.join(thisdir, 'plots')
-split_data_filepath = os.path.join(thisdir, 'cache', 'magazine')
+split_data_filepath = os.path.join(thisdir, 'cache', 'other')
 
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
@@ -40,33 +40,32 @@ for session in sessions:
 n_sessions = len(data['1'].sessions)
 
 only_sound = False
-by_outcome = False
 
 if 1:
-    for rat in rats:
-        if only_sound:
-            filename = 'sound_rat' + rat + '_behavior.png'
-        elif by_outcome:
-            filename = 'outcome_rat' + rat + '_behavior.png'
-        else:
-            filename = 'rat' + rat + '_behavior.png'
-        filepath = os.path.join(output_filepath, filename)
-        plot_behavior(data, [rat], n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)
+    for by_outcome in [True, False]:
+        for rat in rats:
+            if only_sound:
+                filename = 'sound_rat' + rat + '_behavior.png'
+            elif by_outcome:
+                filename = 'outcome_rat' + rat + '_behavior.png'
+            else:
+                filename = 'rat' + rat + '_behavior.png'
+            filepath = os.path.join(output_filepath, filename)
+            plot_behavior(data, [rat], n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)
 
-if 1:
-    filenames = ['group1_behavior.png', 'group2_behavior.png',
-                 'all-rats_behavior.png', 'exp-rats_behavior.png']
-    sound_filenames = ['sound_group1_behavior.png', 'sound_group2_behavior.png',
-                       'sound_all-rats_behavior.png', 'sound_exp-rats_behavior.png']
-    outcome_filenames = ['outcome_group1_behavior.png', 'outcome_group2_behavior.png',
-                         'outcome_all-rats_behavior.png', 'outcome_exp-rats_behavior.png']
-    rat_groups = [['1', '3', '5', '7'], ['2', '4', '6', '8'], rats, ['1', '2', '3', '5', '6', '7', '8']]
+        filenames = ['group1_behavior.png', 'group2_behavior.png',
+                     'all-rats_behavior.png', 'exp-rats_behavior.png']
+        sound_filenames = ['sound_group1_behavior.png', 'sound_group2_behavior.png',
+                           'sound_all-rats_behavior.png', 'sound_exp-rats_behavior.png']
+        outcome_filenames = ['outcome_group1_behavior.png', 'outcome_group2_behavior.png',
+                             'outcome_all-rats_behavior.png', 'outcome_exp-rats_behavior.png']
+        rat_groups = [['1', '3', '5', '7'], ['2', '4', '6', '8'], rats, ['1', '2', '3', '5', '6', '7', '8']]
 
-    for i, rat in enumerate(rat_groups):
-        if only_sound:
-            filepath = os.path.join(output_filepath, sound_filenames[i])
-        elif by_outcome:
-            filepath = os.path.join(output_filepath, outcome_filenames[i])
-        else:
-            filepath = os.path.join(output_filepath, filenames[i])
-        plot_behavior(data, rat, n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)
+        for i, rat in enumerate(rat_groups):
+            if only_sound:
+                filepath = os.path.join(output_filepath, sound_filenames[i])
+            elif by_outcome:
+                filepath = os.path.join(output_filepath, outcome_filenames[i])
+            else:
+                filepath = os.path.join(output_filepath, filenames[i])
+            plot_behavior(data, rat, n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)

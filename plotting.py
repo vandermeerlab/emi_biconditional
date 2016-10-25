@@ -52,5 +52,6 @@ def plot_behavior(data, rats, n_sessions, filepath=None, only_sound=False, by_ou
     plt.legend(bbox_to_anchor=(legend_dist, 1.))
     if filepath is not None:
         plt.savefig(filepath, bbox_inches='tight')
+        plt.close()
     else:
         plt.show()
