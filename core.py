@@ -1,5 +1,6 @@
 import numpy as np
 import vdmlab as vdm
+import pandas as pd
 
 
 def assign_label(data):
@@ -40,16 +41,16 @@ def assign_label(data):
 #     trial4_end = np.array(data[19])
 
     rats_data = {}
-    rats_data['mags'] = vdm.Epoch(np.array([mag_start, mag_end]))
-    rats_data['pellets'] = vdm.Epoch(np.array([pel_start, pel_end]))
-    rats_data['lights1'] = vdm.Epoch(np.array([light1_start, light1_end]))
-    rats_data['lights2'] = vdm.Epoch(np.array([light2_start, light2_end]))
-    rats_data['sounds1'] = vdm.Epoch(np.array([sound1_start, sound1_end]))
-    rats_data['sounds2'] = vdm.Epoch(np.array([sound2_start, sound2_end]))
-#     rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_end)
-#     rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_end)
-#     rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_end)
-#     rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_end)
+    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
+#     rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_end-trial1_start)
+#     rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_end-trial2_start)
+#     rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_end-trial3_start)
+#     rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_end-trial4_start)
 
     return rats_data
 
@@ -140,3 +141,44 @@ def f_analyze(trial, measure):
         output = trial.responses * 100.
 
     return output
+
+
+def combine_rats(data, rats, n_sessions, only_sound=False):
+    """Combines behavioral measures from multiple rats, sessions and trials.
+
+    data: dict
+        With rat (str) as key, contains Rat objects for each rat
+    rats: list
+        With rat_id (str)
+    n_sessions: int
+    only_sound: boolean
+
+    Returns
+    -------
+    df: pd.DataFrame
+
+    """
+    measures = ['durations', 'numbers', 'latency', 'responses']
+    together = dict(trial=[], rat=[], session=[], trial_type=[], rewarded=[],
+                    cue=[], value=[], measure=[], condition=[])
+
+    for session in range(n_sessions):
+        for rat in rats:
+
+            for i, trial in enumerate(data[rat].sessions[session].trials):
+                for measure in measures:
+                    if not only_sound or trial.cue == 'sound':
+                        together['trial'].append("%s, %d" % (rat, i))
+                        together['rat'].append(rat)
+                        together['session'].append(session+2)
+                        together['trial_type'].append(trial.trial_type)
+                        together['rewarded'].append("%s %s" %
+                                                    (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
+                        together['cue'].append(trial.cue)
+                        together['condition'].append("%s %d" % (trial.cue, trial.trial_type))
+                        together['measure'].append(measure)
+                        together['value'].append(f_analyze(trial, measure))
+
+    df = pd.DataFrame(data=together)
+
+    return df

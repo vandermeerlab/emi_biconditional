@@ -1,6 +1,6 @@
 import os
 import vdmlab as vdm
-from core import Rat, assign_label
+from core import Rat, assign_label, combine_rats
 from plotting import plot_behavior
 
 
@@ -38,8 +38,9 @@ for session in sessions:
         data[rat].add_session(**rats_data[rat])
 
 n_sessions = len(data['1'].sessions)
-
 only_sound = False
+
+df = combine_rats(data, rats, n_sessions, only_sound)
 
 if 1:
     for by_outcome in [True, False]:
@@ -51,7 +52,7 @@ if 1:
             else:
                 filename = 'rat' + rat + '_behavior.png'
             filepath = os.path.join(output_filepath, filename)
-            plot_behavior(data, [rat], n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)
+            plot_behavior(df, [rat], filepath, only_sound=only_sound, by_outcome=by_outcome)
 
         filenames = ['group1_behavior.png', 'group2_behavior.png',
                      'all-rats_behavior.png', 'exp-rats_behavior.png']
@@ -68,4 +69,4 @@ if 1:
                 filepath = os.path.join(output_filepath, outcome_filenames[i])
             else:
                 filepath = os.path.join(output_filepath, filenames[i])
-            plot_behavior(data, rat, n_sessions, filepath, only_sound=only_sound, by_outcome=by_outcome)
+            plot_behavior(df, rat, filepath, only_sound=only_sound, by_outcome=by_outcome)
