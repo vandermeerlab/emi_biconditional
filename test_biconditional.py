@@ -86,6 +86,35 @@ def test_light_only():
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
 
 
+def test_rewarded_sound():
+    rat = '5'
+    cue = 'light'
+    for trial in [1, 2, 3, 4]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+    cue = 'sound'
+    for trial in [2, 4]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 10.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    for trial in [1, 3]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+        
 def test_iti_only():
     rat = '6'
     for cue in ['light', 'sound']:
@@ -96,3 +125,32 @@ def test_iti_only():
             assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
             assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
             assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+
+def test_half_light():
+    rat = '7'
+    cue = 'sound'
+    for trial in [1, 2, 3, 4]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+    cue = 'light'
+    for trial in [1, 3]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 5.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    for trial in [2, 4]:
+        this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+                   groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 5.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 5.0))
+        assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))

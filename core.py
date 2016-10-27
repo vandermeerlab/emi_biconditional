@@ -63,6 +63,9 @@ class Session:
 
     def add_trial(self, epoch, cue, trial_type):
         cue_mag = epoch.intersect(self.mags)
+        # print('cue:', epoch.time)
+        # print('mags:', self.mags.time)
+        # print('cue_mag:', cue_mag.time)
 
         self.trials.append(
             Trial(cue=cue,
