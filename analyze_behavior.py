@@ -50,12 +50,12 @@ if 1:
             elif by_outcome:
                 filename = 'outcome_rat' + rat + '_behavior.png'
             else:
-                filename = 'rat' + rat + '_behavior.png'
+                filename = 'trials_rat' + rat + '_behavior.png'
             filepath = os.path.join(output_filepath, filename)
             plot_behavior(df, [rat], filepath, only_sound=only_sound, by_outcome=by_outcome)
 
-        filenames = ['group1_behavior.png', 'group2_behavior.png',
-                     'all-rats_behavior.png', 'exp-rats_behavior.png']
+        filenames = ['trials_group1_behavior.png', 'trials_group2_behavior.png',
+                     'trials_all-rats_behavior.png', 'trials_exp-rats_behavior.png']
         sound_filenames = ['sound_group1_behavior.png', 'sound_group2_behavior.png',
                            'sound_all-rats_behavior.png', 'sound_exp-rats_behavior.png']
         outcome_filenames = ['outcome_group1_behavior.png', 'outcome_group2_behavior.png',

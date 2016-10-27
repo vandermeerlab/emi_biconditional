@@ -114,7 +114,7 @@ def test_rewarded_sound():
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
 
-        
+
 def test_iti_only():
     rat = '6'
     for cue in ['light', 'sound']:
