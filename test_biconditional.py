@@ -154,3 +154,83 @@ def test_half_light():
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 5.0))
         assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+
+def test_complex():
+    rat = '8'
+
+    trial = 1  # are the trial numbers correct?
+    cue = 'light'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+    cue = 'sound'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+    trial = 2
+    cue = 'light'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 10.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 0.0))
+
+    cue = 'sound'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 10.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    trial = 3
+    cue = 'light'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 1.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 9.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    cue = 'sound'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 1.98))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    trial = 4  # or should it be trial 1?
+    cue = 'light'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 2.5))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 2.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))
+
+    cue = 'sound'
+    this_df = (df.groupby(['rat']).get_group(rat).groupby(['cue']).get_group(cue).
+               groupby(['trial_type']).get_group(trial)[['measure', 'value']])
+
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'durations']['value']), 10.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'numbers']['value']), 1.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'latency']['value']), 0.0))
+    assert (np.allclose(np.mean(this_df[this_df['measure'] == 'responses']['value']), 100.0))

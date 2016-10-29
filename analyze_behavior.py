@@ -27,7 +27,6 @@ for rat in rats:
 # for rat in rats_data_a:
 #     for key in rats_data_a[rat]:
 #         rats_data_b[rat][key].join(rats_data_a[rat][key])
-#
 # for rat in rats:
 #     data[rat].add_session(**rats_data_b[rat])
 
