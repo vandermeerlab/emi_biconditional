@@ -26,7 +26,10 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False):
         g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="condition", value="value", color=colours)
         legend_dist = 1.5
     g.set_axis_labels("Session", "Value")
-    for ax, label in zip(g.axes[0], ["Durations", "Numbers", "Latency", "Responses"]):
+    for ax, label in zip(g.axes[0], ["Duration in food cup (s)",
+                                     "# of entries",
+                                     "Latency to first entry (s)",
+                                     "Percent responses"]):
         ax.set_title("")
         ax.set_ylabel(label)
     plt.tight_layout()

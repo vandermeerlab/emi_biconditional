@@ -7,11 +7,11 @@ from plotting import plot_behavior
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data')
 output_filepath = os.path.join(thisdir, 'plots')
-split_data_filepath = os.path.join(thisdir, 'cache', 'other')
 
+broken_sessions = ['!2016-10-19a1', '!2016-10-19a2']
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
-    if file[0] == '!':
+    if file[0] == '!' and file not in broken_sessions:
         sessions.append(os.path.join(data_filepath, file))
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
@@ -20,15 +20,15 @@ data = dict()
 for rat in rats:
     data[rat] = Rat(rat)
 
-# broken_a = os.path.join(split_data_filepath, '!2016-10-19a1')
-# broken_b = os.path.join(split_data_filepath, '!2016-10-19a2')
-# rats_data_a = vdm.load_medpc(broken_a, assign_label)
-# rats_data_b = vdm.load_medpc(broken_b, assign_label)
-# for rat in rats_data_a:
-#     for key in rats_data_a[rat]:
-#         rats_data_b[rat][key].join(rats_data_a[rat][key])
-# for rat in rats:
-#     data[rat].add_session(**rats_data_b[rat])
+broken_a = os.path.join(data_filepath, broken_sessions[0])
+broken_b = os.path.join(data_filepath, broken_sessions[1])
+rats_data_a = vdm.load_medpc(broken_a, assign_label)
+rats_data_b = vdm.load_medpc(broken_b, assign_label)
+for rat in rats_data_a:
+    for key in rats_data_a[rat]:
+        rats_data_b[rat][key].join(rats_data_a[rat][key])
+for rat in rats:
+    data[rat].add_session(**rats_data_b[rat])
 
 for session in sessions:
     rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_label)

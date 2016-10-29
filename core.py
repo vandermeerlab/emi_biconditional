@@ -1,6 +1,7 @@
 import numpy as np
 import vdmlab as vdm
 import pandas as pd
+from broken_session import fix_missing_trials
 
 
 def assign_label(data):
@@ -63,9 +64,6 @@ class Session:
 
     def add_trial(self, epoch, cue, trial_type):
         cue_mag = epoch.intersect(self.mags)
-        # print('cue:', epoch.time)
-        # print('mags:', self.mags.time)
-        # print('cue_mag:', cue_mag.time)
 
         self.trials.append(
             Trial(cue=cue,
@@ -74,6 +72,15 @@ class Session:
                   numbers=cue_mag.n_epochs,
                   latency=cue_mag.start - epoch.start if cue_mag.n_epochs > 0 else 10.0,
                   responses=1 if cue_mag.n_epochs > 0 else 0))
+
+    def add_missing_trial(self, cue, trial_type):
+        self.trials.append(
+            Trial(cue=cue,
+                  trial_type=trial_type,
+                  durations=np.nan,
+                  numbers=np.nan,
+                  latency=np.nan,
+                  responses=np.nan))
 
 
 class Trial:
@@ -125,11 +132,18 @@ class Rat:
             elif self.sound_trials[trial] == 'sounds2':
                 sound_cues = sounds2
 
+            n_trials = 0
             for light in light_cues:
                 for sound in sound_cues:
                     if np.allclose(sound.start - light.stop, delay):
                         session.add_trial(light, 'light', trial)
                         session.add_trial(sound, 'sound', trial)
+                        n_trials += 1
+
+            for _ in range(8 - n_trials):
+                session.add_missing_trial('light', trial)
+                session.add_missing_trial('sound', trial)
+
         self.sessions.append(session)
 
 
@@ -167,13 +181,12 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
 
     for session in range(n_sessions):
         for rat in rats:
-
             for i, trial in enumerate(data[rat].sessions[session].trials):
                 for measure in measures:
                     if not only_sound or trial.cue == 'sound':
                         together['trial'].append("%s, %d" % (rat, i))
                         together['rat'].append(rat)
-                        together['session'].append(session+2)
+                        together['session'].append(session+1)
                         together['trial_type'].append(trial.trial_type)
                         together['rewarded'].append("%s %s" %
                                                     (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
@@ -183,5 +196,7 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
                         together['value'].append(f_analyze(trial, measure))
 
     df = pd.DataFrame(data=together)
+
+    fix_missing_trials(df)
 
     return df
