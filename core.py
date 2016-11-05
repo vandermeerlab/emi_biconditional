@@ -188,8 +188,8 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
                         together['rat'].append(rat)
                         together['session'].append(session+1)
                         together['trial_type'].append(trial.trial_type)
-                        together['rewarded'].append("%s %s" %
-                                                    (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
+                        together['rewarded'].append("%s %d" %
+                                                    (trial.cue, 1 if trial.trial_type % 2 == 0 else 0))
                         together['cue'].append(trial.cue)
                         together['condition'].append("%s %d" % (trial.cue, trial.trial_type))
                         together['measure'].append(measure)
