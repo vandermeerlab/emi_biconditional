@@ -6,7 +6,10 @@ sns.set_style("white")
 sns.set_style("ticks")
 
 
-def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False):
+def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, change_sessions=None):
+    if change_sessions is None:
+        change_sessions = []
+
     rat_idx = np.zeros(len(df), dtype=bool)
     for rat in rats:
         rat_idx = rat_idx | (df['rat'] == rat)
@@ -32,6 +35,10 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False):
                                      "Percent responses"]):
         ax.set_title("")
         ax.set_ylabel(label)
+
+        if len(change_sessions) == 1:
+            ax.axvspan(change_sessions[0], rats_df['session'].max(), color='#cccccc', alpha=0.3)
+
     plt.tight_layout()
     plt.legend(bbox_to_anchor=(legend_dist, 1.))
     if filepath is not None:
