@@ -8,7 +8,7 @@ roborats = os.path.join(thisdir, 'cache', 'other', '!roborats')
 
 rats_data = vdm.load_medpc(roborats, assign_label)
 
-rats = ['1', '2', '3', '4', '5', '6', '7']
+rats = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 data = dict()
 for rat in rats:
