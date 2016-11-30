@@ -51,7 +51,7 @@ if 1:
             else:
                 filename = 'trials_rat' + rat + '_behavior.png'
             filepath = os.path.join(output_filepath, filename)
-            plot_behavior(df, [rat], filepath, only_sound=only_sound, by_outcome=by_outcome, change_sessions=[35])
+            plot_behavior(df, [rat], filepath, only_sound=only_sound, by_outcome=by_outcome, change_sessions=[35, 46])
 
         filenames = ['trials_group1_behavior.png', 'trials_group2_behavior.png',
                      'trials_all-rats_behavior.png', 'trials_exp-rats_behavior.png',
@@ -72,4 +72,4 @@ if 1:
                 filepath = os.path.join(output_filepath, outcome_filenames[i])
             else:
                 filepath = os.path.join(output_filepath, filenames[i])
-            plot_behavior(df, rat, filepath, only_sound=only_sound, by_outcome=by_outcome, change_sessions=[35])
+            plot_behavior(df, rat, filepath, only_sound=only_sound, by_outcome=by_outcome, change_sessions=[35, 46])
