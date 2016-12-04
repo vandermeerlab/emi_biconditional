@@ -12,3 +12,5 @@ dist
 .cache/
 cache/
 plots/
+
+*.asv

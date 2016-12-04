@@ -24,6 +24,7 @@ broken_a = os.path.join(data_filepath, broken_sessions[0])
 broken_b = os.path.join(data_filepath, broken_sessions[1])
 rats_data_a = vdm.load_medpc(broken_a, assign_label)
 rats_data_b = vdm.load_medpc(broken_b, assign_label)
+
 for rat in rats_data_a:
     for key in rats_data_a[rat]:
         rats_data_b[rat][key].join(rats_data_a[rat][key])
