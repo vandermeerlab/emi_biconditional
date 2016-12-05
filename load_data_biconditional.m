@@ -1,5 +1,5 @@
 % Change this filepath to where this data is located on your computer.
-path = '2016-12-04_test';
+path = 'RH01-2016-12-05_behavior';
 
 % Below works on Emily's work computer
 filepath = 'E:\data-biconditional\data-working\';
@@ -53,16 +53,16 @@ evt_main_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.main_o
 evt_cue = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.cue))))};
 evt_house = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.house))))};
 evt_feeder = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.feeder))))};
-evt_noise = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise))))};
-evt_tone = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone))))};
-evt_sound_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.sound_off))))};
-evt_sound2_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.sound2_off))))};
+evt_noise_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise))))};
+evt_tone_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone))))};
+evt_noise_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.sound_off))))};
+evt_tone_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.sound2_off))))};
 evt_label = evt.label;
 
 save([savepath, path(1:15), '-event'], ...
      'evt_start', 'evt_stop', 'evt_pb_off', 'evt_pb_on', 'evt_main_off', ...
-     'evt_cue', 'evt_house', 'evt_feeder', 'evt_noise', 'evt_tone', ...
-     'evt_sound_off', 'evt_sound2_off', 'evt_type', 'evt_label');
+     'evt_cue', 'evt_house', 'evt_feeder', 'evt_noise_off', 'evt_tone_off', ...
+     'evt_noise_on', 'evt_tone_on', 'evt_type', 'evt_label');
  
  
 %%
