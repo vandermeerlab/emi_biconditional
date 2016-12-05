@@ -56,6 +56,46 @@ def assign_label(data):
     return rats_data
 
 
+def vdm_assign_label(events):
+    """Assigns events to proper labels.
+
+    Parameters
+    ----------
+    events: dict
+
+    Returns
+    -------
+    rats_data: dict
+        With mags, pellets, lights1, lights2, sounds1, sounds2 as keys.
+        Each contains vdmlab.Epoch objects
+
+    """
+    mag_start = events['pb_on']
+    mag_end = events['pb_off']
+    if len(mag_start) > len(mag_end):
+        mag_start = np.array(events['pb_on'][:-1])
+    pel_start = events['feeder']
+    pel_end = pel_start + 1
+    light1_start = events['cue_on']
+    light1_end = events['cue_off']
+    light2_start = events['house_on']
+    light2_end = events['house_off']
+    sound1_start = events['tone_on']
+    sound1_end = events['tone_off']
+    sound2_start = events['noise_on']
+    sound2_end = events['noise_off']
+
+    rats_data = {}
+    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
+
+    return rats_data
+
+
 class Session:
     def __init__(self, mags, pellets):
         self.mags = mags
@@ -119,7 +159,7 @@ class Rat:
         else:
             raise ValueError("rat id is incorrect. Should be one of 1-8")
 
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, delay=5.02):
+    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02, tolerance=1e-08):
         session = Session(mags, pellets)
 
         for trial in [1, 2, 3, 4]:
@@ -135,12 +175,12 @@ class Rat:
             n_trials = 0
             for light in light_cues:
                 for sound in sound_cues:
-                    if np.allclose(sound.start - light.stop, delay):
+                    if np.allclose(sound.start - light.stop, delay, atol=tolerance):
                         session.add_trial(light, 'light', trial)
                         session.add_trial(sound, 'sound', trial)
                         n_trials += 1
 
-            for _ in range(8 - n_trials):
+            for _ in range(n_unique - n_trials):
                 session.add_missing_trial('light', trial)
                 session.add_missing_trial('sound', trial)
 
