@@ -14,7 +14,8 @@ for file in sorted(os.listdir(data_filepath)):
     if file[0] == '!' and file not in broken_sessions:
         sessions.append(os.path.join(data_filepath, file))
 
-rats = ['1', '2', '3', '4', '5', '6', '7', '8']
+# rats = ['1', '2', '3', '4', '5', '6', '7', '8']
+rats = ['5', '8']
 
 data = dict()
 for rat in rats:
@@ -37,7 +38,7 @@ for session in sessions:
     for rat in rats:
         data[rat].add_session(**rats_data[rat])
 
-n_sessions = len(data['1'].sessions)
+n_sessions = len(data[rats[0]].sessions)
 only_sound = False
 
 df = combine_rats(data, rats, n_sessions, only_sound)

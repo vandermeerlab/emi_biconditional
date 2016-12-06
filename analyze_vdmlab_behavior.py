@@ -9,10 +9,13 @@ from load_data import get_events
 from plotting import plot_behavior
 
 import info.RH01d1 as RH01d1
+import info.RH01d2 as RH01d2
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab')
 output_filepath = os.path.join(thisdir, 'plots')
+
+sessions = [RH01d1, RH01d2]
 
 
 def correct_timestamps(events):
@@ -46,13 +49,10 @@ rats = [this_rat]
 data = dict()
 data[this_rat] = Rat(this_rat)
 
-sessions = [RH01d1]
-
 for session in sessions:
     events = get_events(session.event_mat)
 
-    if session == 'RH01d1':
-        events = correct_timestamps(events)
+    events = correct_timestamps(events)
 
     rats_data = vdm_assign_label(events)
 
@@ -64,4 +64,4 @@ df = combine_rats(data, rats, n_sessions)
 
 filename = 'vdmlab_trials_rat1_behavior.png'
 filepath = os.path.join(output_filepath, filename)
-plot_behavior(df, ['1'], filepath, only_sound=False, by_outcome=False)
+plot_behavior(df, [this_rat], filepath=None, only_sound=False, by_outcome=False)
