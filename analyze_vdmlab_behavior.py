@@ -28,16 +28,16 @@ def correct_timestamps(events):
                 events['cue_off'].append(off)
     events['cue_off'] = np.array(events['cue_off'])
 
-    events['house_on'] = [events['house'][0], events['house'][7], events['house'][14], events['house'][21]]
+    max_flash = 2.0
+    between_flashes = np.diff(events['house'])
+    events['house_on'] = [events['house'][0]]
+    trial_idx = np.where(between_flashes > max_flash)[0]
+    events['house_on'].extend(events['house'][trial_idx + 1])
     events['house_on'] = np.array(events['house_on'])
 
-    events['flash_off'] = [events['house'][6], events['house'][13], events['house'][20], events['house'][-1]]
-
     events['house_off'] = []
-    for last in events['flash_off']:
-        for off in events['main_off']:
-            if np.allclose(last, off, atol=0.5):
-                events['house_off'].append(off)
+    events['house_off'].extend(events['house'][trial_idx])
+    events['house_off'].append(events['house'][-1])
     events['house_off'] = np.array(events['house_off'])
 
     return events
