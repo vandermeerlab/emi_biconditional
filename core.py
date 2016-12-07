@@ -84,6 +84,56 @@ def vdm_assign_label(events):
     sound1_end = events['tone_off']
     sound2_start = events['noise_on']
     sound2_end = events['noise_off']
+    trial1_start = events['trial1_start']
+    trial2_start = events['trial2_start']
+    trial3_start = events['trial3_start']
+    trial4_start = events['trial4_start']
+
+    trial_duration = 25
+
+    rats_data = {}
+    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
+    rats_data['trial1'] = vdm.Epoch(trial1_start, trial_duration)
+    rats_data['trial2'] = vdm.Epoch(trial2_start, trial_duration)
+    rats_data['trial3'] = vdm.Epoch(trial3_start, trial_duration)
+    rats_data['trial4'] = vdm.Epoch(trial4_start, trial_duration)
+
+    return rats_data
+
+
+def vdm_assign_label_old(events):
+    """Assigns events to proper labels.
+
+    Parameters
+    ----------
+    events: dict
+
+    Returns
+    -------
+    rats_data: dict
+        With mags, pellets, lights1, lights2, sounds1, sounds2 as keys.
+        Each contains vdmlab.Epoch objects
+
+    """
+    mag_start = events['pb_on']
+    mag_end = events['pb_off']
+    if len(mag_start) > len(mag_end):
+        mag_start = np.array(events['pb_on'][:-1])
+    pel_start = events['feeder']
+    pel_end = pel_start + 1
+    light1_start = events['cue_on']
+    light1_end = events['cue_off']
+    light2_start = events['house_on']
+    light2_end = events['house_off']
+    sound1_start = events['tone_on']
+    sound1_end = events['tone_off']
+    sound2_start = events['noise_on']
+    sound2_end = events['noise_off']
 
     rats_data = {}
     rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
