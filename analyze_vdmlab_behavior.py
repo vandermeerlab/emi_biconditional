@@ -56,7 +56,7 @@ for session in sessions:
 
     rats_data = vdm_assign_label(events)
 
-    data[this_rat].add_session(**rats_data, n_unique=2, delay=5.0, tolerance=1.7)
+    data[this_rat].add_session_medpc(**rats_data, n_unique=2, delay=5.0, tolerance=1.7)
 
 n_sessions = len(data[this_rat].sessions)
 

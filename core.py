@@ -56,12 +56,16 @@ def assign_label(data):
     return rats_data
 
 
-def vdm_assign_label(events):
+def vdm_assign_label(events, pellet_duration=1, trial_duration=25):
     """Assigns events to proper labels.
 
     Parameters
     ----------
     events: dict
+    pellet_duration: int
+        Duration of pellet delivery event.
+    trial_duration: int
+        Duration of trial event.
 
     Returns
     -------
@@ -70,14 +74,12 @@ def vdm_assign_label(events):
         Each contains vdmlab.Epoch objects
 
     """
-    trial_duration = 25
-
     mag_start = events['pb_on']
     mag_end = events['pb_off']
     if len(mag_start) > len(mag_end):
         mag_start = np.array(events['pb_on'][:-1])
     pel_start = events['feeder']
-    pel_end = pel_start + 1
+    pel_end = pel_start + pellet_duration
     light1_start = events['cue_on']
     light1_end = events['cue_off']
     light2_start = events['house_on']
@@ -157,6 +159,13 @@ class Session:
         self.trials = []
 
     def add_trial(self, epoch, cue, trial_type):
+        """Adds trial to session
+        epoch: vdmlab.Epoch object
+        cue: str
+            Typically either 'light' or 'sound'
+        trial_type: int
+            Typically 1, 2, 3, or 4
+        """
         cue_mag = epoch.intersect(self.mags)
 
         self.trials.append(
@@ -168,6 +177,12 @@ class Session:
                   responses=1 if cue_mag.n_epochs > 0 else 0))
 
     def add_missing_trial(self, cue, trial_type):
+        """Adds trial placeholders for missing trials.
+        cue: str
+            Typically either 'light' or 'sound'
+        trial_type: int
+            Typically 1, 2, 3, or 4
+        """
         self.trials.append(
             Trial(cue=cue,
                   trial_type=trial_type,
@@ -213,7 +228,26 @@ class Rat:
         else:
             raise ValueError("rat id is incorrect. Should be one of 1-8")
 
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02, tolerance=1e-08):
+    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4):
+        """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
+        session = Session(mags, pellets)
+
+        trials = [trial1, trial2, trial3, trial4]
+        lights = [lights1, lights2]
+        sounds = [sounds1, sounds2]
+
+        for i, trial in enumerate(trials):
+            for single_trial in trial:
+                for light in lights:
+                    session.add_trial(single_trial.intersect(light), 'light', i+1)
+                for sound in sounds:
+                    session.add_trial(single_trial.intersect(sound), 'sound', i+1)
+
+        self.sessions.append(session)
+
+    def add_session_medpc(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02, tolerance=1e-08):
+        """Sorts cues into appropriate trials (1, 2, 3, 4), using specified delay between light and sound cues."""
+
         session = Session(mags, pellets)
 
         for trial in [1, 2, 3, 4]:
@@ -242,6 +276,21 @@ class Rat:
 
 
 def f_analyze(trial, measure):
+    """Extracts appropriate analysis metric.
+
+    Parameters
+    ----------
+    trial: emi_biconditional Trial object
+    measure: str
+        One of 'durations', 'numbers', 'latency', or 'responses'
+
+    Returns
+    --------
+    output: analysis metric for a given trial
+
+    """
+    if measure not in ['durations', 'numbers', 'latency', 'responses']:
+        raise ValueError("measure must be one of 'durations', 'numbers', 'latency', or 'responses'")
     if measure == 'durations':
         output = trial.durations
     if measure == 'numbers':

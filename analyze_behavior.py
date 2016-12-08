@@ -36,7 +36,7 @@ for session in sessions:
     rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_label)
 
     for rat in rats:
-        data[rat].add_session(**rats_data[rat])
+        data[rat].add_session_medpc(**rats_data[rat])
 
 n_sessions = len(data[rats[0]].sessions)
 only_sound = False

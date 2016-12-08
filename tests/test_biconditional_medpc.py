@@ -13,7 +13,7 @@ rats = ['1', '2', '3', '4', '5', '6', '7', '8']
 data = dict()
 for rat in rats:
     data[rat] = Rat(rat)
-    data[rat].add_session(**rats_data[rat])
+    data[rat].add_session_medpc(**rats_data[rat])
 
 n_sessions = len(data['1'].sessions)
 only_sound = False
