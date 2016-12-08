@@ -114,12 +114,12 @@ event.trial3_start = 'trial3_start';
 event.trial3_stop = 'trial3_stop';
 event.trial4_start = 'trial4_start';
 event.trial4_stop = 'trial4_stop';
-event.zero = '0';
-event.one = '1';
-event.two = '2';
-event.three = '3';
-event.four = '4';
-event.five = '5';
+event.zero = 'zero';
+event.one = 'one';
+event.two = 'two';
+event.three = 'three';
+event.four = 'four';
+event.five = 'five';
 
 cfg_evt = [];
 
@@ -151,7 +151,7 @@ cfg_evt.eventLabel = {'start_recording'; 'stop_recording'; 'pb_on'; 'pb_off'; 'f
                       'cue_off'; 'cue_on'; 'house_off'; 'house_on'; ...
                       'noise_on'; 'noise_off'; 'tone_on'; 'tone_off'; ...
                       'trial1_start'; 'trial2_start'; 'trial3_start'; 'trial4_start'; ...
-                      '0'; '1'; '2'; '3'; '4'; '5'};  
+                      'zero'; 'one'; 'two'; 'three'; 'four'; 'five'};  
               
 evt = LoadEvents(cfg_evt);
             
