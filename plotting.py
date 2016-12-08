@@ -40,6 +40,9 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
             ax.axvspan(change_sessions[0], rats_df['session'].max(), color='#cccccc', alpha=0.3)
         elif len(change_sessions) == 2:
             ax.axvspan(change_sessions[0], change_sessions[1]-1, color='#cccccc', alpha=0.3)
+        elif len(change_sessions) == 3:
+            ax.axvspan(change_sessions[0], change_sessions[1]-1, color='#cccccc', alpha=0.3)
+            ax.axvspan(change_sessions[2], rats_df['session'].max(), color='#cccccc', alpha=0.3)
 
     plt.tight_layout()
     plt.legend(bbox_to_anchor=(legend_dist, 1.))
