@@ -1,5 +1,5 @@
 % Change this filepath to where this data is located on your computer.
-path = '2016-12-08_test';
+path = 'RH01-2016-12-09_behavior2';
 
 % Below works on Emily's work computer
 filepath = 'E:\data-biconditional\data-working\';

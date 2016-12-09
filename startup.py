@@ -21,12 +21,12 @@ def load_events(matfile):
     events['trial3_start'] = loading_events['evt_trial3_start'][0]
     events['trial4_start'] = loading_events['evt_trial4_start'][0]
 
-    events['0'] = loading_events['evt_zero'][0]
-    events['1'] = loading_events['evt_one'][0]
-    events['2'] = loading_events['evt_two'][0]
-    events['3'] = loading_events['evt_three'][0]
-    events['4'] = loading_events['evt_four'][0]
-    events['5'] = loading_events['evt_five'][0]
+    # events['0'] = loading_events['evt_zero'][0]
+    # events['1'] = loading_events['evt_one'][0]
+    # events['2'] = loading_events['evt_two'][0]
+    # events['3'] = loading_events['evt_three'][0]
+    # events['4'] = loading_events['evt_four'][0]
+    # events['5'] = loading_events['evt_five'][0]
 
     events['type'] = loading_events['evt_type'][0]
     events['label'] = []

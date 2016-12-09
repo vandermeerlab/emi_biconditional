@@ -30,7 +30,7 @@ for rat in rats_data_a:
     for key in rats_data_a[rat]:
         rats_data_b[rat][key].join(rats_data_a[rat][key])
 for rat in rats:
-    data[rat].add_session(**rats_data_b[rat])
+    data[rat].add_session_medpc(**rats_data_b[rat])
 
 for session in sessions:
     rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_label)

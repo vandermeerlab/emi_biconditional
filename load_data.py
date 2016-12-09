@@ -1,6 +1,6 @@
 import os
 
-from startup import load_events, load_events_medpc
+from startup import load_events
 
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
