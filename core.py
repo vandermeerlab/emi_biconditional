@@ -78,6 +78,8 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25):
     mag_end = events['pb_off']
     if len(mag_start) > len(mag_end):
         mag_start = np.array(events['pb_on'][:-1])
+    if len(mag_end) > len(mag_start):
+        mag_end = np.array(events['pb_off'][1:])
     pel_start = events['feeder']
     pel_end = pel_start + pellet_duration
     light1_start = events['cue_on']

@@ -1,5 +1,5 @@
 % Change this filepath to where this data is located on your computer.
-path = '2016-12-10_test1';
+path = 'R105-2016-12-10_behavior';
 
 % Below works on Emily's work computer
 filepath = 'E:\data-biconditional\data-working\';
@@ -63,25 +63,25 @@ cfg_evt.eventLabel = {'start_recording'; 'stop_recording'; 'pb_on'; 'pb_off'; 'f
               
 evt = LoadEvents(cfg_evt);
 
-%%              
+% save events in .mat to be read in python             
 evt_type = evt.type;
-evt_feeder = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.feeder))))};
-evt_cue_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.cue_on))))};
-evt_cue_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.cue_off))))};
-evt_house_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.house_on))))};
-evt_house_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.house_off))))};
-evt_tone_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone_on))))};
-evt_tone_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone_off))))};
-evt_noise_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise_on))))};
-evt_noise_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise_off))))};
-evt_pb_on = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.pb_on))))};
-evt_pb_off = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.pb_off))))};
-evt_start = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.start))))};
-evt_stop = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.stop))))};
-evt_trial1_start = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial1_start))))};
-evt_trial2_start = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial2_start))))};
-evt_trial3_start = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial3_start))))};
-evt_trial4_start = evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial4_start))))};
+evt_feeder = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.feeder))))});
+evt_cue_on = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.cue_on))))});
+evt_cue_off = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.cue_off))))});
+evt_house_on = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.house_on))))});
+evt_house_off = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.house_off))))});
+evt_tone_on = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone_on))))});
+evt_tone_off = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.tone_off))))});
+evt_noise_on = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise_on))))});
+evt_noise_off = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.noise_off))))});
+evt_pb_on = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.pb_on))))});
+evt_pb_off = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.pb_off))))});
+evt_start = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.start))))});
+evt_stop = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.stop))))});
+evt_trial1_start = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial1_start))))});
+evt_trial2_start = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial2_start))))});
+evt_trial3_start = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial3_start))))});
+evt_trial4_start = unique(evt.t{find(not(cellfun('isempty', strfind(evt.label, event.trial4_start))))});
 evt_label = evt.label;
 
 save([savepath, path(1:15), '-event'], ...
