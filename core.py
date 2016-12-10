@@ -18,10 +18,7 @@ def assign_label(data):
         Each contains vdmlab.Epoch objects
 
     """
-    mag_start = np.array(data[1])
-    mag_end = np.array(data[2])
-    if len(mag_start) > len(mag_end):
-        mag_start = np.array(data[1][:-1])
+    mag_start, mag_end = remove_double_inputs(np.array(data[1]), np.array(data[2]))
     pel_start = np.array(data[3])
     pel_end = pel_start + 1
     light1_start = np.array(data[4])
@@ -74,12 +71,7 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25):
         Each contains vdmlab.Epoch objects
 
     """
-    mag_start = events['pb_on']
-    mag_end = events['pb_off']
-    if len(mag_start) > len(mag_end):
-        mag_start = np.array(events['pb_on'][:-1])
-    if len(mag_end) > len(mag_start):
-        mag_end = np.array(events['pb_off'][1:])
+    mag_start, mag_end = remove_double_inputs(events['pb_on'], events['pb_off'])
     pel_start = events['feeder']
     pel_end = pel_start + pellet_duration
     light1_start = events['cue_on']
@@ -345,3 +337,37 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
     fix_missing_trials(df)
 
     return df
+
+
+def remove_double_inputs(on_events, off_events):
+    """Removed double on and off input events.
+
+    Parameters
+    ----------
+    on_events: np.array
+    off_events: np.array
+
+    Returns
+    -------
+    no_double_on_events: np.array
+    no_double_off_events: np.array
+    """
+
+    all_events = [(on_time, 'on', i) for i, on_time in enumerate(on_events)]
+    all_events += [(off_time, 'off', i) for i, off_time in enumerate(off_events)]
+
+    sorted_events = sorted(all_events)
+
+    double_on_idx = []
+    double_off_idx = []
+
+    for evt1, evt2 in zip(sorted_events[:-1], sorted_events[1:]):
+        if evt1[1] == evt2[1] and evt1[1] == 'on':
+            double_on_idx.append(evt1[2])
+        if evt1[1] == evt2[1] and evt1[1] == 'off':
+            double_off_idx.append(evt2[2])
+
+    no_double_on_events = np.delete(on_events, double_on_idx)
+    no_double_off_events = np.delete(off_events, double_off_idx)
+
+    return no_double_on_events, no_double_off_events
