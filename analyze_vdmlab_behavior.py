@@ -6,16 +6,18 @@ from load_data import get_events
 from plotting import plot_behavior
 
 import info.RH05d1 as RH05d1
-# import info.RH05d1 as RH05d2
+import info.RH05d2 as RH05d2
+
 import info.R105d1 as R105d1
+import info.R105d2 as R105d2
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab')
 output_filepath = os.path.join(thisdir, 'plots')
 
-rat5_sessions = [RH05d1, RH05d1]
-rat8_sessions = [R105d1, R105d1]
-all_sessions =[rat5_sessions, rat8_sessions]
+rat5_sessions = [RH05d1, RH05d2]
+rat8_sessions = [R105d1, R105d2]
+all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
 
