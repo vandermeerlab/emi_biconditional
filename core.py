@@ -371,3 +371,76 @@ def remove_double_inputs(on_events, off_events):
     no_double_off_events = np.delete(off_events, double_off_idx)
 
     return no_double_on_events, no_double_off_events
+
+
+def epoch_contains(epochs, value):
+    """Checks whether value is in any epoch.
+
+    Parameters
+    ----------
+    epochs: vdmlab.Epoch
+    value: float or int
+
+    Returns
+    -------
+    boolean
+
+    """
+    for start, stop in zip(epochs.starts, epochs.stops):
+        if value >= start and value <= stop:
+            return True
+    return False
+
+
+def remove_trial_events(events, remove_trial, trial_duration=25):
+    """Removes light and sound events during a given trial.
+
+    Parameters
+    -----------
+    events: dict
+        With trial1_start, trial2_start, trial3_start, trial4_start,
+        'cue_on', 'cue_off', 'house_on', 'house_off', 'tone_on',
+        'tone_off', 'noise_on', 'noise_off', each a np.array
+    remove_trial: str
+        'trial1', 'trial2', 'trial3', 'trial4'
+    trial_duration: int
+        Default set to 25 seconds
+
+    Returns
+    -------
+    filtered: dict
+
+    """
+
+    valid_trials = ['trial1', 'trial2', 'trial3', 'trial4']
+
+    if remove_trial not in valid_trials:
+        raise ValueError("remove_trial must be one of 'trial1', 'trial2', 'trial3', 'trial4'")
+
+    cues = ['cue_on', 'cue_off', 'house_on', 'house_off']
+
+    trial1_start = events['trial1_start']
+    trial1_stop = trial1_start + trial_duration
+    trial2_start = events['trial2_start']
+    trial2_stop = trial2_start + trial_duration
+    trial3_start = events['trial3_start']
+    trial3_stop = trial3_start + trial_duration
+    trial4_start = events['trial4_start']
+    trial4_stop = trial4_start + trial_duration
+
+    rats_data = dict()
+    rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_stop-trial1_start)
+    rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_stop-trial2_start)
+    rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_stop-trial3_start)
+    rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_stop-trial4_start)
+
+    filtered = events
+
+    for cue in cues:
+        remove_idx = []
+        for i, event in enumerate(events[cue]):
+            if epoch_contains(rats_data[remove_trial], event):
+                remove_idx.append(i)
+        filtered[cue] = np.delete(events[cue], remove_idx)
+
+    return filtered
