@@ -18,7 +18,10 @@ def assign_label(data):
         Each contains vdmlab.Epoch objects
 
     """
-    mag_start, mag_end = remove_double_inputs(np.array(data[1]), np.array(data[2]))
+    mag_start = np.array(data[1])
+    mag_end = np.array(data[2])
+    if len(mag_start) > len(mag_end):
+        mag_start = np.array(data[1][:-1])
     pel_start = np.array(data[3])
     pel_end = pel_start + 1
     light1_start = np.array(data[4])
@@ -53,7 +56,7 @@ def assign_label(data):
     return rats_data
 
 
-def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10):
+def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10, n_trials=32):
     """Assigns events to proper labels.
 
     Parameters
@@ -63,6 +66,8 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
         Duration of pellet delivery event.
     trial_duration: int
         Duration of trial event.
+    cue_duration: int
+    n_trials: int
 
     Returns
     -------
@@ -71,6 +76,11 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
         Each contains vdmlab.Epoch objects
 
     """
+    ons = ['cue_on', 'house_on', 'tone_on', 'noise_on']
+    for on in ons:
+        if len(events[on]) < (n_trials / 2):
+            raise ValueError("missing %s event. Only %d found" % (on, len(events[on])))
+
     mag_start, mag_end = remove_double_inputs(events['pb_on'], events['pb_off'])
     pel_start = events['feeder']
     pel_end = pel_start + pellet_duration

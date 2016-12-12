@@ -30,8 +30,9 @@ for rat, sessions in zip(rats, all_sessions):
         if session == R105d1:
             events = remove_trial_events(events, 'trial3')
             events['house_on'] = np.delete(events['house_on'], 11)
-
-        rats_data = vdm_assign_label(events)
+            rats_data = vdm_assign_label(events, n_trials=16)
+        else:
+            rats_data = vdm_assign_label(events)
         data[rat].add_session(**rats_data)
 
     n_sessions = len(data[rat].sessions)
