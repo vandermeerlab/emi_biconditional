@@ -19,9 +19,10 @@ Workflow
 ## Specific analyses
 
 This code contains analyses for:
-* Behavior: `analyze_behavior.py`
+* Behavior (medpc): `analyze_behavior.py`
 Which analyzes and plots durations, number of entries, latency to first entry, 
 and percent with responses.
+* Behavior (vdmlab operant box): `analyze_vdmlab_behavior.py`
 
 
 Biconditional task description
@@ -66,4 +67,4 @@ that each pairing that is rewarded in one group is not in the other and vice ver
 
 ### Analysis
 
-See detailed descriptions above.
+RH01-RH06 & R103, R105 were trained in medpc boxes. RH05 & R105 underwent further training in vdmlab operant box.
