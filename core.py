@@ -53,7 +53,7 @@ def assign_label(data):
     return rats_data
 
 
-def vdm_assign_label(events, pellet_duration=1, trial_duration=25):
+def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10):
     """Assigns events to proper labels.
 
     Parameters
@@ -75,13 +75,19 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25):
     pel_start = events['feeder']
     pel_end = pel_start + pellet_duration
     light1_start = events['cue_on']
-    light1_end = events['cue_off']
+    light1_end = light1_start + cue_duration
     light2_start = events['house_on']
-    light2_end = events['house_off']
+    light2_end = light2_start + cue_duration
     sound1_start = events['tone_on']
-    sound1_end = events['tone_off']
+    sound1_end = sound1_start + cue_duration
     sound2_start = events['noise_on']
-    sound2_end = events['noise_off']
+    sound2_end = sound2_start + cue_duration
+
+    # light1_end = events['cue_off']
+    # light2_end = events['house_off']
+    # sound1_end = events['tone_off']
+    # sound2_end = events['noise_off']
+
     trial1_start = events['trial1_start']
     trial1_stop = trial1_start + trial_duration
     trial2_start = events['trial2_start']
