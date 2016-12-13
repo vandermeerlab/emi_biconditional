@@ -6,7 +6,7 @@ sns.set_style("white")
 sns.set_style("ticks")
 
 
-def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, change_sessions=None):
+def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, change_sessions=None, xlim=None):
     if change_sessions is None:
         change_sessions = []
 
@@ -43,6 +43,9 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
         elif len(change_sessions) == 3:
             ax.axvspan(change_sessions[0], change_sessions[1]-1, color='#cccccc', alpha=0.3)
             ax.axvspan(change_sessions[2], rats_df['session'].max(), color='#cccccc', alpha=0.3)
+
+        if xlim is not None:
+            ax.set_xlim(xlim)
 
     plt.tight_layout()
     plt.legend(bbox_to_anchor=(legend_dist, 1.))
