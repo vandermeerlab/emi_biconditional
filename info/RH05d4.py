@@ -1,5 +1,5 @@
-session_id = 'test'
-session = '2016-12-13_test'
+session_id = 'RH05d4'
+session = 'RH05-2016-12-13'
 
 species = 'rat'
 behavior = 'biconditional'

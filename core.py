@@ -56,7 +56,7 @@ def assign_label(data):
     return rats_data
 
 
-def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10, n_trials=32):
+def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10, min_n_trials=32, max_n_trials=32):
     """Assigns events to proper labels.
 
     Parameters
@@ -78,8 +78,10 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     """
     ons = ['cue_on', 'house_on', 'tone_on', 'noise_on']
     for on in ons:
-        if len(events[on]) < (n_trials / 2):
-            raise ValueError("missing %s event. Only %d found" % (on, len(events[on])))
+        if len(events[on]) < (min_n_trials / 2):
+            raise ValueError("missing %s event(s). Only %d found" % (on, len(events[on])))
+        elif len(events[on]) > (max_n_trials / 2):
+            raise ValueError("too many %s events. %d found" % (on, len(events[on])))
 
     mag_start, mag_end = remove_double_inputs(events['pb_on'], events['pb_off'])
     pel_start = events['feeder']
