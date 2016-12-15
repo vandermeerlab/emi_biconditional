@@ -9,18 +9,22 @@ import info.RH05d1 as RH05d1
 import info.RH05d2 as RH05d2
 import info.RH05d3 as RH05d3
 import info.RH05d4 as RH05d4
+import info.RH05d5 as RH05d5
+import info.RH05d6 as RH05d6
 
 import info.R105d1 as R105d1
 import info.R105d2 as R105d2
 import info.R105d3 as R105d3
 import info.R105d4 as R105d4
+import info.R105d5 as R105d5
+import info.R105d6 as R105d6
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab')
 output_filepath = os.path.join(thisdir, 'plots')
 
-rat5_sessions = [RH05d1, RH05d2, RH05d3, RH05d4]
-rat8_sessions = [R105d1, R105d2, R105d3, R105d4]
+rat5_sessions = [RH05d1, RH05d2, RH05d3, RH05d4, RH05d5, RH05d6]
+rat8_sessions = [R105d1, R105d2, R105d3, R105d4, R105d5, R105d6]
 all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
