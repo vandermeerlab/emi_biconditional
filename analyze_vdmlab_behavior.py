@@ -29,7 +29,6 @@ all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
 
-
 for rat, sessions in zip(rats, all_sessions):
     data = dict()
     data[rat] = Rat(rat)
@@ -49,6 +48,6 @@ for rat, sessions in zip(rats, all_sessions):
 
     df = combine_rats(data, [rat], n_sessions)
 
-    filename = 'vdmlab_trials_rat' + rat + '_behavior1.png'
+    filename = 'vdmlab_trials_rat' + rat + '_behavior.png'
     filepath = os.path.join(output_filepath, filename)
     plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=False)
