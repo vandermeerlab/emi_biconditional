@@ -1,8 +1,8 @@
 import os
 import numpy as np
 
-from core import Rat, vdm_assign_label, combine_rats, remove_trial_events
-from load_data import get_events
+from core import Rat, combine_rats
+from load_data import load_biconditional_events, vdm_assign_label, remove_trial_events
 from plotting import plot_behavior
 
 import info.RH05d1 as RH05d1
@@ -29,12 +29,14 @@ all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
 
+
 for rat, sessions in zip(rats, all_sessions):
     data = dict()
     data[rat] = Rat(rat)
 
     for session in sessions:
-        events = get_events(session.event_mat)
+        events = load_biconditional_events(os.path.join(data_filepath, session.event_file))
+
         if session == R105d1:
             events = remove_trial_events(events, 'trial3')
             events['house_on'] = np.delete(events['house_on'], 11)
@@ -47,6 +49,6 @@ for rat, sessions in zip(rats, all_sessions):
 
     df = combine_rats(data, [rat], n_sessions)
 
-    filename = 'vdmlab_trials_rat' + rat + '_behavior.png'
+    filename = 'vdmlab_trials_rat' + rat + '_behavior1.png'
     filepath = os.path.join(output_filepath, filename)
     plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=False)

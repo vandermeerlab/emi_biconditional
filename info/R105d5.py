@@ -6,3 +6,4 @@ behavior = 'biconditional'
 experimenter = 'Emily Irvine'
 
 event_mat = session + '-event.mat'
+event_file = session + '-Events.nev'
