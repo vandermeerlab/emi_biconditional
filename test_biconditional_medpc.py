@@ -1,7 +1,8 @@
 import os
 import numpy as np
 import vdmlab as vdm
-from core import Rat, assign_label, combine_rats
+from core import Rat, combine_rats
+from load_data import assign_label
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 roborats = os.path.join(thisdir, 'cache', 'other', '!roborats')
