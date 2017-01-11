@@ -97,7 +97,8 @@ class Rat:
 
         self.sessions.append(session)
 
-    def add_session_medpc(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02, tolerance=1e-08):
+    def add_session_medpc(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02,
+                          tolerance=1e-08):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using specified delay between light and sound cues."""
 
         session = Session(mags, pellets)
