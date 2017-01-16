@@ -48,10 +48,17 @@ function f_biconditional(trial, control)
 	        % Steady light (10 s), pause (5 s), white-noise (10 s), rewarded
 	        run_trial(control, control.trial4_event, control.steady_on_timer, ...
 	        control.steady_off_timer, control.noise_on_timer, control.noise_off_timer, control.feeder_timer)
-	    end
+        end
 
+    elseif control.group == 3
+        if trial == 1
+            run_magazine(control.feeder_timer)
+        else
+            error('magazine group only has 1 trial')
+        end
+        
 	else
-		error('unknown group. Must be 1 or 2')
+		error('unknown group. Must be 1 or 2 or 3 (magazine training)')
     end
 
 end
@@ -73,6 +80,15 @@ function run_trial(control, trial_start_event, light_on_timer, light_off_timer, 
     end
     
 end
+
+
+function run_magazine(feeder_timer)
+    stop(feeder_timer);
+
+    start(feeder_timer);
+    
+end
+
 
 
 function stop_all(control)
