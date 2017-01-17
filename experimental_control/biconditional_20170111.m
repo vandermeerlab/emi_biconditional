@@ -29,80 +29,80 @@ feeder.port = '0';
 feeder.pin = '5';
 feeder.n_pellets = '2';
 
-% Steady (cue) light
-cue.command = '-SetDigitalIOBit';
-cue.port = '0';
-cue.pin = '2';
-cue.event = 'cue';
-cue.ttl = '21'; % ttl numbers are arbitrary 
-cue.id = '1'; % id numbers are arbitrary
+% Steady (left) light
+light1.command = '-SetDigitalIOBit';
+light1.port = '0';
+light1.pin = '2';
+light1.event = 'light1';
+light1.ttl = '21'; % ttl numbers are arbitrary 
+light1.id = '1'; % id numbers are arbitrary
 
-% Flashing (house) light
-house.command = '-SetDigitalIOBit';
-house.port = '0';
-house.pin = '3';
-house.event = 'house';
-house.ttl = '22'; % ttl numbers are arbitrary 
-house.id = '2'; % id numbers are arbitrary
-house.on_duration = 0.1;
+% Flashing (right) light
+light2.command = '-SetDigitalIOBit';
+light2.port = '0';
+light2.pin = '3';
+light2.event = 'light2';
+light2.ttl = '22'; % ttl numbers are arbitrary 
+light2.id = '2'; % id numbers are arbitrary
+light2.on_duration = 0.1;
           
-% Tone sound
-tone.command = '-SetDigitalIOBit';
-tone.port = '2';
-tone.pin = '0';
-tone.event = 'tone';
-tone.ttl = '23'; % ttl numbers are arbitrary 
-tone.id = '3'; % id numbers are arbitrary
+% Click sound
+sound1.command = '-SetDigitalIOBit';
+sound1.port = '2';
+sound1.pin = '2';
+sound1.event = 'sound1';
+sound1.ttl = '23'; % ttl numbers are arbitrary 
+sound1.id = '3'; % id numbers are arbitrary
 
 % White-noise sound
-noise.command = '-SetDigitalIOBit';
-noise.port = '2';
-noise.pin = '1';
-noise.event = 'noise';
-noise.ttl = '24'; % ttl numbers are arbitrary 
-noise.id = '4'; % id numbers are arbitrary
+sound2.command = '-SetDigitalIOBit';
+sound2.port = '2';
+sound2.pin = '1';
+sound2.event = 'sound2';
+sound2.ttl = '24'; % ttl numbers are arbitrary 
+sound2.id = '4'; % id numbers are arbitrary
 
 % Sounds initially on (because they are triggered by being pulled low)
 % Here, let's turn them off to initialize for the experiment
 sounds.off = @(command, port, pin) NlxSendCommand([command, ' AcqSystem1_0 ', port, ' ' , pin, ' on']);
 
-sounds.off(tone.command, tone.port, tone.pin);
-sounds.off(noise.command, noise.port, noise.pin);
+sounds.off(sound1.command, sound1.port, sound1.pin);
+sounds.off(sound2.command, sound2.port, sound2.pin);
 
 % Biconditional experiment parameters
 biconditional.light_delay = 0;
 biconditional.light_duration = 10;
 biconditional.pause_duration = 1;
 biconditional.sound_duration = 10;
-biconditional.feeder_delay = biconditional.light_duration ...
-    biconditional.pause_duration biconditional.sound_duration; % used in biconditional experiment.
+biconditional.feeder_delay = biconditional.light_duration + ...
+     biconditional.pause_duration + biconditional.sound_duration; % used in biconditional experiment.
 % biconditional.feeder_delay = 0; % used for magazine training
 
 % Initializing timers
 control.steady_on_timer = timer('StartDelay', biconditional.light_delay, ...
-    'TimerFcn', @(~, ~) set_nlx('on', cue));
+    'TimerFcn', @(~, ~) set_nlx('on', light1));
 control.steady_off_timer = timer('StartDelay', biconditional.light_duration, ...
-    'TimerFcn', @(~, ~) set_nlx('off', cue));
+    'TimerFcn', @(~, ~) set_nlx('off', light1));
 
-control.pulse_on_timer = timer('StartDelay', 0, 'Period', house.on_duration*2, ...
-    'TimerFcn', @(~, ~) NlxSendCommand([house.command, ' AcqSystem1_0 ', house.port, ' ' , house.pin, ' on']), 'ExecutionMode', 'fixedSpacing');
-control.pulse_off_timer = timer('StartDelay', house.on_duration, 'Period', house.on_duration*2, ...
-    'TimerFcn', @(~, ~) NlxSendCommand([house.command, ' AcqSystem1_0 ', house.port, ' ' , house.pin, ' off']), 'ExecutionMode', 'fixedSpacing');
+control.pulse_on_timer = timer('StartDelay', 0, 'Period', light2.on_duration*2, ...
+    'TimerFcn', @(~, ~) NlxSendCommand([light2.command, ' AcqSystem1_0 ', light2.port, ' ' , light2.pin, ' on']), 'ExecutionMode', 'fixedSpacing');
+control.pulse_off_timer = timer('StartDelay', light2.on_duration, 'Period', light2.on_duration*2, ...
+    'TimerFcn', @(~, ~) NlxSendCommand([light2.command, ' AcqSystem1_0 ', light2.port, ' ' , light2.pin, ' off']), 'ExecutionMode', 'fixedSpacing');
 
 control.flash_on_timer = timer('StartDelay', biconditional.light_delay, ...
-    'TimerFcn', @(~, ~) pulse(control.pulse_on_timer, control.pulse_off_timer, house));
+    'TimerFcn', @(~, ~) pulse(control.pulse_on_timer, control.pulse_off_timer, light2));
 control.flash_off_timer = timer('StartDelay', biconditional.light_duration, ...
-    'TimerFcn', @(~, ~) stop_timer(control.flash_on_timer, control.pulse_on_timer, control.pulse_off_timer, house));
+    'TimerFcn', @(~, ~) stop_timer(control.flash_on_timer, control.pulse_on_timer, control.pulse_off_timer, light2));
 
-control.tone_on_timer = timer('StartDelay', biconditional.light_duration biconditional.pause_duration, ...
-    'TimerFcn', @(~, ~) set_nlx('off', tone));
-control.tone_off_timer = timer('StartDelay', biconditional.light_duration biconditional.pause_duration biconditional.sound_duration, ...
-    'TimerFcn', @(~, ~) set_nlx('on', tone));
+control.sound1_on_timer = timer('StartDelay', biconditional.light_duration + biconditional.pause_duration, ...
+    'TimerFcn', @(~, ~) set_nlx('off', sound1));
+control.sound1_off_timer = timer('StartDelay', biconditional.light_duration + biconditional.pause_duration + biconditional.sound_duration, ...
+    'TimerFcn', @(~, ~) set_nlx('on', sound1));
 
-control.noise_on_timer = timer('StartDelay', biconditional.light_duration biconditional.pause_duration, ...
-    'TimerFcn', @(~, ~) set_nlx('off', noise));
-control.noise_off_timer = timer('StartDelay', biconditional.light_duration biconditional.pause_duration biconditional.sound_duration, ...
-    'TimerFcn', @(~, ~) set_nlx('on', noise));
+control.sound2_on_timer = timer('StartDelay', biconditional.light_duration + biconditional.pause_duration, ...
+    'TimerFcn', @(~, ~) set_nlx('off', sound2));
+control.sound2_off_timer = timer('StartDelay', biconditional.light_duration + biconditional.pause_duration + biconditional.sound_duration, ...
+    'TimerFcn', @(~, ~) set_nlx('on', sound2));
 
 control.feeder_timer = timer('StartDelay', biconditional.feeder_delay, ...
     'TimerFcn', ['fireFeeder(' feeder.port, ', ', feeder.pin, ', ', feeder.n_pellets, ');']);
@@ -113,33 +113,33 @@ control.trial3_event = '-PostEvent trial3_start 77 7';
 control.trial4_event = '-PostEvent trial4_start 66 6';
 
 
-%% Check steady cue light & tone
+%% Check steady left light & sound1
 disp(['Checking the steady light (', num2str(biconditional.light_duration), ' sec)']);
 start(control.steady_off_timer);
 start(control.steady_on_timer);
 
-disp(['Checking the tone (pause ', num2str(biconditional.light_duration biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
-start(control.tone_off_timer);
-start(control.tone_on_timer);
+disp(['Checking the click (pause ', num2str(biconditional.light_duration + biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
+start(control.sound1_off_timer);
+start(control.sound1_on_timer);
 
 
-%% Check flashing house light & white-noise & feeder (2 pellets)
+%% Check flashing right light & white-noise & feeder (2 pellets)
 
 disp(['Checking the flashing light (', num2str(biconditional.light_duration), ' sec)']);
 start(control.flash_off_timer);
 start(control.flash_on_timer);
 
-disp(['Checking the white-noise (pause ', num2str(biconditional.light_duration biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
-start(control.noise_off_timer);
-start(control.noise_on_timer);
+disp(['Checking the white-noise (pause ', num2str(biconditional.light_duration + biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
+start(control.sound2_off_timer);
+start(control.sound2_on_timer);
 
 disp(['Checking the feeder with ', num2str(feeder.n_pellets), ' pellets after ', num2str(biconditional.feeder_delay), ' sec delay']);
 start(control.feeder_timer)
 
 
 %% Check the feeder (2 pellets)
-% disp('Checking the feeder');
-% start(control.feeder_timer)
+disp('Checking the feeder');
+start(control.feeder_timer)
 
 
 %% Finished initializing
@@ -360,11 +360,11 @@ n_trials = 32;
 % trials = [1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 1];
 % itis = [270, 150, 210, 330, 150, 270, 210, 330, 270, 210, 330, 150, 150, 270, 330, 210, 330, 150, 210, 270, 150, 210, 330, 270, 330, 210, 150, 270, 210, 330, 150, 270, 150];
 
-if length(trials) < (n_trials 1)
+if length(trials) < (n_trials + 1)
 	error('Too few trials!')
 end
 
-if length(itis) < (n_trials 1)
+if length(itis) < (n_trials + 1)
 	error('Too few itis!')
 end
 
@@ -385,7 +385,7 @@ axis off;
 
 tic;
 while toc < itis(1)
-    set(h_title,'String',sprintf('time %.1f, ITI %d', toc, itis(1)));
+    set(h_title, 'String', sprintf('time %.1f, ITI %d', toc, itis(1)));
     drawnow;
 end
 
@@ -394,18 +394,18 @@ count = 1;
 while count <= n_trials
     
     this_trial = trials(count);
-    this_iti = itis(count 1);
+    this_iti = itis(count + 1);
     
     f_biconditional(this_trial, control)
     
     tic; 
-    while toc < this_iti biconditional.feeder_delay
+    while toc < this_iti + biconditional.feeder_delay
         set(h_title,'String',sprintf('time %.1f, ITI %.1d, next_trial: %d, n_trials %d',...
-            toc, this_iti biconditional.feeder_delay, trials(count 1), count));
+            toc, this_iti + biconditional.feeder_delay, trials(count + 1), count));
         drawnow;
     end
 
-    count = count 1;
+    count = count + 1;
 end
 
 disp('Done experiment!');
