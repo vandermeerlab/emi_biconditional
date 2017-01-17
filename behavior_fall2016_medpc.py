@@ -21,6 +21,8 @@ for file in sorted(os.listdir(data_filepath)):
         extended_sessions.append(os.path.join(data_filepath, file))
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
+group1 = ['1', '3', '5', '7']
+group2 = ['2', '4', '6', '8']
 
 plot_extended = True
 if plot_extended:
@@ -29,7 +31,7 @@ if plot_extended:
 
 data = dict()
 for rat in rats:
-    data[rat] = Rat(rat)
+    data[rat] = Rat(rat, group1, group2)
 
 broken_a = os.path.join(data_filepath, broken_sessions[0])
 broken_b = os.path.join(data_filepath, broken_sessions[1])

@@ -152,7 +152,7 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
         Each contains vdmlab.Epoch objects
 
     """
-    ons = ['cue_on', 'house_on', 'tone_on', 'noise_on']
+    ons = ['light1_on', 'light2_on', 'sound1_on', 'sound2_on']
     for on in ons:
         if len(events[on]) < (min_n_trials / 2):
             raise ValueError("missing %s event(s). Only %d found" % (on, len(events[on])))
@@ -162,13 +162,13 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     mag_start, mag_end = remove_double_inputs(events['pb_on'], events['pb_off'])
     pel_start = events['feeder']
     pel_end = pel_start + pellet_duration
-    light1_start = events['cue_on']
+    light1_start = events['light1_on']
     light1_end = light1_start + cue_duration
-    light2_start = events['house_on']
+    light2_start = events['light2_on']
     light2_end = light2_start + cue_duration
-    sound1_start = events['tone_on']
+    sound1_start = events['sound1_on']
     sound1_end = sound1_start + cue_duration
-    sound2_start = events['noise_on']
+    sound2_start = events['sound2_on']
     sound2_end = sound2_start + cue_duration
 
     trial1_start = events['trial1_start']
@@ -195,7 +195,7 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     return rats_data
 
 
-def load_biconditional_events(filename):
+def load_biconditional_events_old(filename):
     """Loads biconditional events. Corrects keys labels.
 
     Parameters
@@ -207,15 +207,64 @@ def load_biconditional_events(filename):
     events: dict
 
     """
-    cues = ['Starting Recording', 'Stopping Recording',
-            'cue_on', 'cue_off', 'house_on', 'house_off',
-            'tone_on', 'tone_off', 'noise_on', 'noise_off',
-            'trial1_start', 'trial2_start', 'trial3_start', 'trial4_start',
-            'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).',
-            'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).',
-            'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).']
+    labels = dict()
+    labels['start'] = 'Starting Recording'
+    labels['stop'] = 'Stopping Recording'
+    labels['light1_on'] = 'cue_on'
+    labels['light1_off'] = 'cue_off'
+    labels['light2_on'] = 'house_on'
+    labels['light2_off'] = 'house_off'
+    labels['sound1_on'] = 'tone_on'
+    labels['sound1_off'] = 'tone_off'
+    labels['sound2_on'] = 'noise_on'
+    labels['sound2_off'] = 'noise_off'
+    labels['trial1_start'] = 'trial1_start'
+    labels['trial2_start'] = 'trial2_start'
+    labels['trial3_start'] = 'trial3_start'
+    labels['trial4_start'] = 'trial4_start'
+    labels['feeder'] = 'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).'
+    labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).'
+    labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
 
-    events = vdm.load_events(filename, cues)
+    events = vdm.load_events(filename, labels)
+    events = correct_sounds(events)
+
+    return events
+
+
+def load_biconditional_events_general(filename):
+    """Loads biconditional events. Corrects keys labels.
+
+    Parameters
+    ----------
+    filename: str
+
+    Returns
+    -------
+    events: dict
+
+    """
+
+    labels = dict()
+    labels['start'] = 'Starting Recording'
+    labels['stop'] = 'Stopping Recording'
+    labels['light1_on'] = 'light1_on'
+    labels['light1_off'] = 'light1_off'
+    labels['light2_on'] = 'light2_on'
+    labels['light2_off'] = 'light2_off'
+    labels['sound1_on'] = 'sound1_on'
+    labels['sound1_off'] = 'sound1_off'
+    labels['sound2_on'] = 'sound2_on'
+    labels['sound2_off'] = 'sound2_off'
+    labels['trial1_start'] = 'trial1_start'
+    labels['trial2_start'] = 'trial2_start'
+    labels['trial3_start'] = 'trial3_start'
+    labels['trial4_start'] = 'trial4_start'
+    labels['feeder'] = 'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).'
+    labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0008).'
+    labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
+
+    events = vdm.load_events(filename, labels)
     events = correct_sounds(events)
 
     return events
@@ -235,23 +284,23 @@ def correct_sounds(events):
 
     """
     renamed_events = dict()
-    renamed_events['cue_on'] = events['cue_on']
-    renamed_events['cue_off'] = events['cue_off']
-    renamed_events['house_on'] = events['house_on']
-    renamed_events['house_off'] = events['house_off']
-    renamed_events['tone_on'] = events['tone_off']
-    renamed_events['tone_off'] = events['tone_on']
-    renamed_events['noise_on'] = events['noise_off']
-    renamed_events['noise_off'] = events['noise_on']
-    renamed_events['feeder'] = events['TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).']
-    renamed_events['pb_on'] = events['TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).']
-    renamed_events['pb_off'] = events['TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).']
-    renamed_events['start_recording'] = events['Starting Recording']
-    renamed_events['stop_recording'] = events['Stopping Recording']
+    renamed_events['start'] = events['start']
+    renamed_events['stop'] = events['stop']
+    renamed_events['light1_on'] = events['light1_on']
+    renamed_events['light1_off'] = events['light1_off']
+    renamed_events['light2_on'] = events['light2_on']
+    renamed_events['light2_off'] = events['light2_off']
+    renamed_events['sound1_on'] = events['sound1_off']
+    renamed_events['sound1_off'] = events['sound1_on']
+    renamed_events['sound2_on'] = events['sound2_off']
+    renamed_events['sound2_off'] = events['sound2_on']
     renamed_events['trial1_start'] = events['trial1_start']
     renamed_events['trial2_start'] = events['trial2_start']
     renamed_events['trial3_start'] = events['trial3_start']
     renamed_events['trial4_start'] = events['trial4_start']
+    renamed_events['feeder'] = events['feeder']
+    renamed_events['pb_on'] = events['pb_on']
+    renamed_events['pb_off'] = events['pb_off']
 
     return renamed_events
 
@@ -281,7 +330,7 @@ def remove_trial_events(events, remove_trial, trial_duration=25):
     if remove_trial not in valid_trials:
         raise ValueError("remove_trial must be one of 'trial1', 'trial2', 'trial3', 'trial4'")
 
-    cues = ['cue_on', 'cue_off', 'house_on', 'house_off']
+    cues = ['light1_on', 'light1_off', 'light2_on', 'light2_off']
 
     trial1_start = events['trial1_start']
     trial1_stop = trial1_start + trial_duration

@@ -55,11 +55,10 @@ class Trial:
 
 
 class Rat:
-    group1 = ['1', '3', '5', '7']
-    group2 = ['2', '4', '6', '8']
-
-    def __init__(self, rat_id):
+    def __init__(self, rat_id, group1=None, group2=None):
         self.rat_id = rat_id
+        self.group1 = group1
+        self.group2 = group2
         self.sessions = []
 
         self.sound_trials = {1: 'sounds2',
@@ -67,18 +66,19 @@ class Rat:
                              3: 'sounds1',
                              4: 'sounds2'}
 
-        if rat_id in Rat.group1:
+        if group1 is not None and rat_id in group1:
             self.light_trials = {1: 'lights1',
                                  2: 'lights1',
                                  3: 'lights2',
                                  4: 'lights2'}
-        elif rat_id in Rat.group2:
+
+        elif group2 is not None and rat_id in group2:
             self.light_trials = {1: 'lights2',
                                  2: 'lights2',
                                  3: 'lights1',
                                  4: 'lights1'}
         else:
-            raise ValueError("rat id is incorrect. Should be one of 1-8")
+            raise ValueError("rat id is incorrect. Should be in group1 or group2")
 
     def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""

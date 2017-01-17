@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from core import Rat, combine_rats
-from load_data import load_biconditional_events, vdm_assign_label, remove_trial_events
+from load_data import load_biconditional_events_old, vdm_assign_label, remove_trial_events
 from plotting import plot_behavior
 
 import info.RH05d1 as RH05d1
@@ -28,17 +28,19 @@ rat8_sessions = [R105d1, R105d2, R105d3, R105d4, R105d5, R105d6]
 all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
+group1 = ['5']
+group2 = ['8']
 
 for rat, sessions in zip(rats, all_sessions):
     data = dict()
-    data[rat] = Rat(rat)
+    data[rat] = Rat(rat, group1, group2)
 
     for session in sessions:
-        events = load_biconditional_events(os.path.join(data_filepath, session.event_file))
+        events = load_biconditional_events_old(os.path.join(data_filepath, session.event_file))
 
         if session == R105d1:
             events = remove_trial_events(events, 'trial3')
-            events['house_on'] = np.delete(events['house_on'], 11)
+            events['light2_on'] = np.delete(events['light2_on'], 11)
             rats_data = vdm_assign_label(events, min_n_trials=16)
         else:
             rats_data = vdm_assign_label(events)

@@ -10,10 +10,12 @@ roborats = os.path.join(thisdir, 'cache', 'other', '!roborats')
 rats_data = vdm.load_medpc(roborats, assign_medpc_label)
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
+group1 = ['1', '3', '5', '7']
+group2 = ['2', '4', '6', '8']
 
 data = dict()
 for rat in rats:
-    data[rat] = Rat(rat)
+    data[rat] = Rat(rat, group1, group2)
     data[rat].add_session_medpc(**rats_data[rat])
 
 n_sessions = len(data['1'].sessions)
