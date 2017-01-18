@@ -15,39 +15,39 @@ function f_biconditional(trial, control)
 	if control.group == 1
 	    if trial == 1
 	    	% Steady light (10 s), pause (5 s), white-noise (10 s), unrewarded
-	        run_trial(control, control.trial1_event, control.steady_on_timer, ...
-	        control.steady_off_timer, control.noise_on_timer, control.noise_off_timer, [])
+	        run_trial(control, control.trial1_event, control.light1_on_timer, ...
+	        control.light1_off_timer, control.sound2_on_timer, control.sound2_off_timer, [])
 	    elseif trial == 2
 	        % Steady light (10 s), pause (5 s), tone (10 s), rewarded
-	        run_trial(control, control.trial2_event, control.steady_on_timer, ...
-	        control.steady_off_timer, control.tone_on_timer, control.tone_off_timer, control.feeder_timer)
+	        run_trial(control, control.trial2_event, control.light1_on_timer, ...
+	        control.light1_off_timer, control.sound1_on_timer, control.sound1_off_timer, control.feeder_timer)
 	    elseif trial == 3
 	        % Flashing light (10 s), pause (5 s), tone (10 s), unrewarded
-	        run_trial(control, control.trial3_event, control.flash_on_timer, ...
-	        control.flash_off_timer, control.tone_on_timer, control.tone_off_timer, [])
+	        run_trial(control, control.trial3_event, control.light2_on_timer, ...
+	        control.light2_off_timer, control.sound1_on_timer, control.sound1_off_timer, [])
 	    elseif trial == 4
 	        % Flashing light (10 s), pause (5 s), white-noise (10 s), rewarded
-	        run_trial(control, control.trial4_event, control.flash_on_timer, ...
-	        control.flash_off_timer, control.noise_on_timer, control.noise_off_timer, control.feeder_timer)
+	        run_trial(control, control.trial4_event, control.light2_on_timer, ...
+	        control.light2_off_timer, control.sound2_on_timer, control.sound2_off_timer, control.feeder_timer)
 	    end
 
     elseif control.group == 2
     	if trial == 1
 	    	% Flashing light (10 s), pause (5 s), white-noise (10 s), unrewarded
-	        run_trial(control, control.trial1_event, control.flash_on_timer, ...
-	        control.flash_off_timer, control.noise_on_timer, control.noise_off_timer, [])
+	        run_trial(control, control.trial1_event, control.light2_on_timer, ...
+	        control.light2_off_timer, control.sound2_on_timer, control.sound2_off_timer, [])
 	    elseif trial == 2
 	        % Flashing light (10 s), pause (5 s), tone (10 s), rewarded
-	        run_trial(control, control.trial2_event, control.flash_on_timer, ...
-	        control.flash_off_timer, control.tone_on_timer, control.tone_off_timer, control.feeder_timer)
+	        run_trial(control, control.trial2_event, control.light2_on_timer, ...
+	        control.light2_off_timer, control.sound1_on_timer, control.sound1_off_timer, control.feeder_timer)
 	    elseif trial == 3
 	        % Steady light (10 s), pause (5 s), tone (10 s), unrewarded
-	        run_trial(control, control.trial3_event, control.steady_on_timer, ...
-	        control.steady_off_timer, control.tone_on_timer, control.tone_off_timer, [])
+	        run_trial(control, control.trial3_event, control.light1_on_timer, ...
+	        control.light1_off_timer, control.sound1_on_timer, control.sound1_off_timer, [])
 	    elseif trial == 4
 	        % Steady light (10 s), pause (5 s), white-noise (10 s), rewarded
-	        run_trial(control, control.trial4_event, control.steady_on_timer, ...
-	        control.steady_off_timer, control.noise_on_timer, control.noise_off_timer, control.feeder_timer)
+	        run_trial(control, control.trial4_event, control.light1_on_timer, ...
+	        control.light1_off_timer, control.sound2_on_timer, control.sound2_off_timer, control.feeder_timer)
         end
 
     elseif control.group == 3
@@ -94,16 +94,16 @@ end
 function stop_all(control)
     % Stops all timers
  
-    stop(control.steady_off_timer);
-    stop(control.flash_off_timer);
-    stop(control.tone_off_timer);
-    stop(control.noise_off_timer);
+    stop(control.light1_off_timer);
+    stop(control.light2_off_timer);
+    stop(control.sound1_off_timer);
+    stop(control.sound2_off_timer);
     
     stop(control.feeder_timer);
     
-    stop(control.steady_on_timer);
-    stop(control.flash_on_timer);
-    stop(control.tone_on_timer);
-    stop(control.noise_on_timer);
+    stop(control.light1_on_timer);
+    stop(control.light2_on_timer);
+    stop(control.sound1_on_timer);
+    stop(control.sound2_on_timer);
     
 end

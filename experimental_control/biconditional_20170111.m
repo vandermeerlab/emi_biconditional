@@ -79,9 +79,9 @@ biconditional.feeder_delay = biconditional.light_duration + ...
 % biconditional.feeder_delay = 0; % used for magazine training
 
 % Initializing timers
-control.steady_on_timer = timer('StartDelay', biconditional.light_delay, ...
+control.light1_on_timer = timer('StartDelay', biconditional.light_delay, ...
     'TimerFcn', @(~, ~) set_nlx('on', light1));
-control.steady_off_timer = timer('StartDelay', biconditional.light_duration, ...
+control.light1_off_timer = timer('StartDelay', biconditional.light_duration, ...
     'TimerFcn', @(~, ~) set_nlx('off', light1));
 
 control.pulse_on_timer = timer('StartDelay', 0, 'Period', light2.on_duration*2, ...
@@ -89,10 +89,10 @@ control.pulse_on_timer = timer('StartDelay', 0, 'Period', light2.on_duration*2, 
 control.pulse_off_timer = timer('StartDelay', light2.on_duration, 'Period', light2.on_duration*2, ...
     'TimerFcn', @(~, ~) NlxSendCommand([light2.command, ' AcqSystem1_0 ', light2.port, ' ' , light2.pin, ' off']), 'ExecutionMode', 'fixedSpacing');
 
-control.flash_on_timer = timer('StartDelay', biconditional.light_delay, ...
+control.light2_on_timer = timer('StartDelay', biconditional.light_delay, ...
     'TimerFcn', @(~, ~) pulse(control.pulse_on_timer, control.pulse_off_timer, light2));
-control.flash_off_timer = timer('StartDelay', biconditional.light_duration, ...
-    'TimerFcn', @(~, ~) stop_timer(control.flash_on_timer, control.pulse_on_timer, control.pulse_off_timer, light2));
+control.light2_off_timer = timer('StartDelay', biconditional.light_duration, ...
+    'TimerFcn', @(~, ~) stop_timer(control.light2_on_timer, control.pulse_on_timer, control.pulse_off_timer, light2));
 
 control.sound1_on_timer = timer('StartDelay', biconditional.light_duration + biconditional.pause_duration, ...
     'TimerFcn', @(~, ~) set_nlx('off', sound1));
@@ -115,8 +115,8 @@ control.trial4_event = '-PostEvent trial4_start 66 6';
 
 %% Check steady left light & sound1
 disp(['Checking the steady light (', num2str(biconditional.light_duration), ' sec)']);
-start(control.steady_off_timer);
-start(control.steady_on_timer);
+start(control.light1_off_timer);
+start(control.light1_on_timer);
 
 disp(['Checking the click (pause ', num2str(biconditional.light_duration + biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
 start(control.sound1_off_timer);
@@ -126,8 +126,8 @@ start(control.sound1_on_timer);
 %% Check flashing right light & white-noise & feeder (2 pellets)
 
 disp(['Checking the flashing light (', num2str(biconditional.light_duration), ' sec)']);
-start(control.flash_off_timer);
-start(control.flash_on_timer);
+start(control.light2_off_timer);
+start(control.light2_on_timer);
 
 disp(['Checking the white-noise (pause ', num2str(biconditional.light_duration + biconditional.pause_duration), ' sec; on for ', num2str(biconditional.sound_duration), ' sec)']);
 start(control.sound2_off_timer);
@@ -148,16 +148,16 @@ disp('Maze initialized. Empty pellets. Ready to start experiment!');
 
 %% Set up daily trials, itis
 
-n_trials = 32;
+% n_trials = 32;
 
 % % Test
-% trials = [1, 2, 3, 4, 1, 2, 3, 4, 1];
-% itis = [5, 5, 5, 5, 5, 5, 5, 5, 5];
-% n_trials = 4;
+trials = [1, 2, 3, 4, 1, 2, 3, 4, 1];
+itis = [2, 2, 2, 2, 5, 5, 5, 5, 5];
+n_trials = 4;
 
 % Magazine training
-% trials = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-% itis = [150, 210, 330, 330, 150, 210, 270, 270, 330, 150, 270, 150, 270, 210, 330, 210, 150];
+%trials = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+%itis = [150, 210, 330, 330, 150, 210, 270, 270, 330, 150, 270, 150, 270, 210, 330, 210, 150];
 % n_trials = 16;
 
 % Session 1
