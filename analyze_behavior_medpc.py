@@ -7,7 +7,7 @@ from plotting import plot_behavior
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'winter2017')
-output_filepath = os.path.join(thisdir, 'plots')
+output_filepath = os.path.join(thisdir, 'plots', 'winter2017')
 
 magazine_session = '!2017-01-17'
 
@@ -37,14 +37,14 @@ df = combine_rats(data, rats, n_sessions)
 
 if 1:
     for rat in rats:
-        filename = 'rat' + rat + '_behavior.png'
+        filename = rat + '_behavior.png'
         filepath = os.path.join(output_filepath, filename)
         plot_behavior(df, [rat], filepath, by_outcome=True)
 
 if 1:
     for by_outcome in [True, False]:
-        filenames = ['trials_group1_behavior.png', 'trials_group2_behavior.png', 'trials_all-rats_behavior.png']
-        outcome_filenames = ['outcome_group1_behavior.png', 'outcome_group2_behavior.png', 'outcome_all-rats_behavior.png']
+        filenames = ['group1_trials_medpc.png', 'group2_trials_medpc.png', 'all-rats_trials_medpc.png']
+        outcome_filenames = ['group1_outcome_medpc.png', 'group2_outcome_medpc.png', 'all-rats_outcome_medpc.png']
         rat_groups = [group1, group2, rats]
 
         for i, rat in enumerate(rat_groups):

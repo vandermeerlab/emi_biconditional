@@ -7,7 +7,7 @@ from plotting import plot_behavior
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'med_fall2016')
-output_filepath = os.path.join(thisdir, 'plots', 'med_fall2016')
+output_filepath = os.path.join(thisdir, 'plots', 'fall2016')
 
 broken_sessions = ['!2016-10-19a1', '!2016-10-19a2']
 extended = ['!2016-11-28', '!2016-11-29', '!2016-11-30', '!2016-12-01', '!2016-12-02', '!2016-12-03',

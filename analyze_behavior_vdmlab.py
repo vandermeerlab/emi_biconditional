@@ -6,7 +6,7 @@ from plotting import plot_behavior
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'winter2017')
-output_filepath = os.path.join(thisdir, 'plots')
+output_filepath = os.path.join(thisdir, 'plots', 'winter2017')
 
 magazine_session = 'R115-2017-01-17-Events.nev'
 
@@ -31,6 +31,6 @@ n_sessions = len(data[rat].sessions)
 
 df = combine_rats(data, [rat], n_sessions)
 
-filename = 'vdmlab_trials_rat' + rat + '_behavior.png'
+filename = rat + '_behavior.png'
 filepath = os.path.join(output_filepath, filename)
 plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=True)

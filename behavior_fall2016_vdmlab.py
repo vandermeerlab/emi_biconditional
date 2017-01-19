@@ -20,8 +20,8 @@ import info.R105d5 as R105d5
 import info.R105d6 as R105d6
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
-data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab')
-output_filepath = os.path.join(thisdir, 'plots')
+data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab_fall2016')
+output_filepath = os.path.join(thisdir, 'plots', 'fall2016')
 
 rat5_sessions = [RH05d1, RH05d2, RH05d3, RH05d4, RH05d5, RH05d6]
 rat8_sessions = [R105d1, R105d2, R105d3, R105d4, R105d5, R105d6]
