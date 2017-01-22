@@ -31,6 +31,12 @@ n_sessions = len(data[rat].sessions)
 
 df = combine_rats(data, [rat], n_sessions)
 
-filename = rat + '_behavior.png'
-filepath = os.path.join(output_filepath, filename)
-plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=True)
+if 1:
+    filename = rat + '_outcome_behavior.png'
+    filepath = os.path.join(output_filepath, filename)
+    plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=True)
+
+if 1:
+    filename = rat + '_behavior.png'
+    filepath = os.path.join(output_filepath, filename)
+    plot_behavior(df, [rat], filepath=filepath, only_sound=False, by_outcome=False)

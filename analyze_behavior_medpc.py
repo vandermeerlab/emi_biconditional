@@ -37,9 +37,15 @@ df = combine_rats(data, rats, n_sessions)
 
 if 1:
     for rat in rats:
-        filename = rat + '_behavior.png'
+        filename = rat + '_outcome_behavior.png'
         filepath = os.path.join(output_filepath, filename)
         plot_behavior(df, [rat], filepath, by_outcome=True)
+
+if 1:
+    for rat in rats:
+        filename = rat + '_behavior.png'
+        filepath = os.path.join(output_filepath, filename)
+        plot_behavior(df, [rat], filepath, by_outcome=False)
 
 if 1:
     for by_outcome in [True, False]:
