@@ -25,7 +25,7 @@ for session in sessions:
     events = load_biconditional_events_general(os.path.join(data_filepath, session))
 
     rats_data = vdm_assign_label(events)
-    data[rat].add_session(**rats_data)
+    data[rat].add_session(**rats_data, group=2)
 
 n_sessions = len(data[rat].sessions)
 

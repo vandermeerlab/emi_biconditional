@@ -28,10 +28,11 @@ rat8_sessions = [R105d1, R105d2, R105d3, R105d4, R105d5, R105d6]
 all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
+groups = [1, 2]
 group1 = ['5']
 group2 = ['8']
 
-for rat, sessions in zip(rats, all_sessions):
+for rat, sessions, group in zip(rats, all_sessions, groups):
     data = dict()
     data[rat] = Rat(rat, group1, group2)
 
@@ -44,7 +45,7 @@ for rat, sessions in zip(rats, all_sessions):
             rats_data = vdm_assign_label(events, min_n_trials=16)
         else:
             rats_data = vdm_assign_label(events)
-        data[rat].add_session(**rats_data)
+        data[rat].add_session(**rats_data, group=group)
 
     n_sessions = len(data[rat].sessions)
 

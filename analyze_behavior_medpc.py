@@ -17,6 +17,7 @@ for file in sorted(os.listdir(data_filepath)):
         sessions.append(os.path.join(data_filepath, file))
 
 rats = ['R120', 'R121', 'R118', 'R119', 'R116', 'R117', 'R114']
+groups = [1, 2, 1, 2, 1, 2, 1]
 group1 = ['R120', 'R118', 'R116', 'R114']
 group2 = ['R121', 'R119', 'R117']
 
@@ -27,8 +28,8 @@ for rat in rats:
 for session in sessions:
     rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_label)
 
-    for rat in rats:
-        data[rat].add_session(**rats_data[rat])
+    for rat, group in zip(rats, groups):
+        data[rat].add_session(**rats_data[rat], group=group)
 
 n_sessions = len(data[rats[0]].sessions)
 
