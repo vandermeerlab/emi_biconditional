@@ -20,7 +20,7 @@ for file in sorted(os.listdir(data_filepath)):
 # session_id = '2017-01-19'
 print('checking session:', session_id)
 
-def check_session(data, n_unique_trial=8, n_feeder=16, n_light=16, n_sound=16):
+def check_session(data, n_unique_trial=8, n_feeder=16, n_light=16, n_sound=16, n_mags=0):
     for trial in ['trial1', 'trial2', 'trial3', 'trial4']:
         n_trial = data[trial].n_epochs
         assert(n_trial == n_unique_trial)
@@ -34,6 +34,9 @@ def check_session(data, n_unique_trial=8, n_feeder=16, n_light=16, n_sound=16):
 
     n_trial = data['pellets'].n_epochs
     assert(n_trial == n_feeder or n_trial == n_feeder*2)
+
+    n_trial = data['mags'].n_epochs
+    assert(n_trial > n_mags)
 
     print('passed')
 
