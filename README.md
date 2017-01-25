@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vandermeerlab/emi_biconditional.svg?branch=master)](https://travis-ci.org/vandermeerlab/emi_biconditional)
+
 Getting started for this project
 ================================
 
