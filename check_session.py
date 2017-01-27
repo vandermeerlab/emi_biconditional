@@ -53,9 +53,12 @@ for rat in rats:
 
 # rat in recording box
 rec_filename = os.path.join(data_filepath, 'R115-' + session_id + '-Events.nev')
-events = load_biconditional_events_general(rec_filename)
+events = load_biconditional_events_general(rec_filename, photobeam='zero')
+# events = load_biconditional_events_general(rec_filename, photobeam='c')
 rec_data = vdm_assign_label(events)
 
 rat = other_rat
 print(rat, ':')
 check_session(rec_data)
+
+

@@ -232,12 +232,14 @@ def load_biconditional_events_old(filename):
     return events
 
 
-def load_biconditional_events_general(filename):
+def load_biconditional_events_general(filename, photobeam):
     """Loads biconditional events. Corrects keys labels.
 
     Parameters
     ----------
     filename: str
+    photobeam: str
+        Either 'zero' or 'c'
 
     Returns
     -------
@@ -261,8 +263,14 @@ def load_biconditional_events_general(filename):
     labels['trial3_start'] = 'trial3_start'
     labels['trial4_start'] = 'trial4_start'
     labels['feeder'] = 'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).'
-    labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0008).'
-    labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
+    if photobeam == 'zero':
+        labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0008).'
+        labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
+    elif photobeam == 'c':
+        labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).'
+        labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x000C).'
+    else:
+        raise ValueError("must specify which photobeam used")
 
     events = vdm.load_events(filename, labels)
     events = correct_sounds(events)
