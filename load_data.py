@@ -28,6 +28,12 @@ def remove_double_inputs(on_events, off_events):
     double_on_idx = []
     double_off_idx = []
 
+    if sorted_events[0][1] == 'off':
+        double_off_idx.append(sorted_events[0][2])
+
+    if sorted_events[-1][1] == 'on':
+        double_on_idx.append(sorted_events[-1][2])
+
     for evt1, evt2 in zip(sorted_events[:-1], sorted_events[1:]):
         if evt1[1] == evt2[1] and evt1[1] == 'on':
             double_on_idx.append(evt1[2])
@@ -36,6 +42,9 @@ def remove_double_inputs(on_events, off_events):
 
     no_double_on_events = np.delete(on_events, double_on_idx)
     no_double_off_events = np.delete(off_events, double_off_idx)
+
+    if not len(no_double_on_events) == len(no_double_off_events):
+        raise ValueError("number of photobeams on and off must match")
 
     return no_double_on_events, no_double_off_events
 
