@@ -301,23 +301,23 @@ def correct_sounds(events):
 
     """
     renamed_events = dict()
-    renamed_events['start'] = events['start']
-    renamed_events['stop'] = events['stop']
-    renamed_events['light1_on'] = events['light1_on']
-    renamed_events['light1_off'] = events['light1_off']
-    renamed_events['light2_on'] = events['light2_on']
-    renamed_events['light2_off'] = events['light2_off']
-    renamed_events['sound1_on'] = events['sound1_off']
-    renamed_events['sound1_off'] = events['sound1_on']
-    renamed_events['sound2_on'] = events['sound2_off']
-    renamed_events['sound2_off'] = events['sound2_on']
-    renamed_events['trial1_start'] = events['trial1_start']
-    renamed_events['trial2_start'] = events['trial2_start']
-    renamed_events['trial3_start'] = events['trial3_start']
-    renamed_events['trial4_start'] = events['trial4_start']
-    renamed_events['feeder'] = events['feeder']
-    renamed_events['pb_on'] = events['pb_on']
-    renamed_events['pb_off'] = events['pb_off']
+    renamed_events['start'] = np.unique(events['start'])
+    renamed_events['stop'] = np.unique(events['stop'])
+    renamed_events['light1_on'] = np.unique(events['light1_on'])
+    renamed_events['light1_off'] = np.unique(events['light1_off'])
+    renamed_events['light2_on'] = np.unique(events['light2_on'])
+    renamed_events['light2_off'] = np.unique(events['light2_off'])
+    renamed_events['sound1_on'] = np.unique(events['sound1_off'])
+    renamed_events['sound1_off'] = np.unique(events['sound1_on'])
+    renamed_events['sound2_on'] = np.unique(events['sound2_off'])
+    renamed_events['sound2_off'] = np.unique(events['sound2_on'])
+    renamed_events['trial1_start'] = np.unique(events['trial1_start'])
+    renamed_events['trial2_start'] = np.unique(events['trial2_start'])
+    renamed_events['trial3_start'] = np.unique(events['trial3_start'])
+    renamed_events['trial4_start'] = np.unique(events['trial4_start'])
+    renamed_events['feeder'] = np.unique(events['feeder'])
+    renamed_events['pb_on'] = np.unique(events['pb_on'])
+    renamed_events['pb_off'] = np.unique(events['pb_off'])
 
     return renamed_events
 
