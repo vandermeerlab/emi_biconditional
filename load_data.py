@@ -49,12 +49,13 @@ def remove_double_inputs(on_events, off_events):
     return no_double_on_events, no_double_off_events
 
 
-def assign_label(data):
+def assign_label(data, min_duration=0.027):
     """Assigns events to proper labels.
 
     Parameters
     ----------
     data: dict
+    min_duration: float
 
     Returns
     -------
@@ -98,7 +99,12 @@ def assign_label(data):
     rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_end-trial3_start)
     rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_end-trial4_start)
 
-    return rats_data
+    min_epoch_data = dict()
+    for key in rats_data:
+        above_thresh_idx = rats_data[key].durations > min_duration
+        min_epoch_data[key] = rats_data[key][above_thresh_idx]
+
+    return min_epoch_data
 
 
 def assign_medpc_label(data):
