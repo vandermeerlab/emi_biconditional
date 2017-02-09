@@ -38,7 +38,7 @@ def remove_double_inputs(on_events, off_events):
         if evt1[1] == evt2[1] and evt1[1] == 'on':
             double_on_idx.append(evt1[2])
         if evt1[1] == evt2[1] and evt1[1] == 'off':
-            double_off_idx.append(evt2[2])
+            double_off_idx.append(evt1[2])
 
     no_double_on_events = np.delete(on_events, double_on_idx)
     no_double_off_events = np.delete(off_events, double_off_idx)
