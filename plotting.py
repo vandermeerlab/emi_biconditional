@@ -23,10 +23,12 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
     g = sns.FacetGrid(data=rats_df, col="measure", sharey=False, size=3, aspect=1.)
     if by_outcome:
         colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac"]
-        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="rewarded", value="value", color=colours)
+        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="rewarded", value="value",
+                        err_style="ci_band", ci=68, color=colours)
         legend_dist = 1.8
     else:
-        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="condition", value="value", color=colours)
+        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="condition", value="value",
+                        err_style="ci_band", ci=68, color=colours)
         legend_dist = 1.5
     g.set_axis_labels("Session", "Value")
     for ax, label in zip(g.axes[0], ["Duration in food cup (s)",
