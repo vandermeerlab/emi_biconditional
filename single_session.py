@@ -41,13 +41,13 @@ n_sessions = len(data[rats[0]].sessions)
 
 df = combine_rats(data, rats, n_sessions)
 
-duration_df = df[df['measure']=='durations']
+duration_df = df[df['measure'] == 'durations']
 
 for rat in rats:
     print(rat)
     for outcome in ['rewarded', 'unrewarded']:
-        outcome_df = duration_df[duration_df['rewarded']=='sound ' + outcome]
-        rat_df = outcome_df[outcome_df['rat']==rat]
+        outcome_df = duration_df[duration_df['rewarded'] == 'sound ' + outcome]
+        rat_df = outcome_df[outcome_df['rat'] == rat]
         print(outcome, ':', rat_df['value'].mean())
 
 
@@ -69,10 +69,10 @@ n_sessions = len(data[rat].sessions)
 
 df = combine_rats(data, [rat], n_sessions)
 
-duration_df = df[df['measure']=='durations']
+duration_df = df[df['measure'] == 'durations']
 
 print(rat)
 for outcome in ['rewarded', 'unrewarded']:
-    outcome_df = duration_df[duration_df['rewarded']=='sound ' + outcome]
-    rat_df = outcome_df[outcome_df['rat']==rat]
+    outcome_df = duration_df[duration_df['rewarded'] == 'sound ' + outcome]
+    rat_df = outcome_df[outcome_df['rat'] == rat]
     print(outcome, ':', rat_df['value'].mean())
