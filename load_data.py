@@ -247,7 +247,7 @@ def load_biconditional_events_old(filename):
     return events
 
 
-def load_biconditional_events_general(filename, photobeam):
+def load_biconditional_events_general(filename, photobeam, missing_start=True):
     """Loads biconditional events. Corrects keys labels.
 
     Parameters
@@ -255,6 +255,7 @@ def load_biconditional_events_general(filename, photobeam):
     filename: str
     photobeam: str
         Either 'zero' or 'c'
+    missing_start: bool
 
     Returns
     -------

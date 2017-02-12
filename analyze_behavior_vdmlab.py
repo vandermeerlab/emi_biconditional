@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 from core import Rat, combine_rats
 from load_data import load_biconditional_events_general, vdm_assign_label
@@ -10,6 +11,8 @@ output_filepath = os.path.join(thisdir, 'plots', 'winter2017')
 
 magazine_session = 'R115-2017-01-17-Events.nev'
 c_photobeams = ['R115-2017-01-26-Events.nev']
+missing_events = ['R115-2017-02-11-Events.nev']
+missing_value = [('sound1_on', 6, 'sound1_off')]
 
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
@@ -27,6 +30,12 @@ for session in sessions:
         events = load_biconditional_events_general(session, photobeam='c')
     else:
         events = load_biconditional_events_general(session, photobeam='zero')
+
+    for i, missing in enumerate(missing_events):
+        if missing == session[-26:]:
+            events[missing_value[i][0]] = np.insert(events[missing_value[i][0]],
+                                                    missing_value[i][1],
+                                                    np.array(events[missing_value[i][2]][missing_value[i][1]] - 10))
 
     rats_data = vdm_assign_label(events)
     data[rat].add_session(**rats_data, group=2)
