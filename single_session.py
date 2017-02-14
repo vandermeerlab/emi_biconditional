@@ -1,4 +1,5 @@
 import os
+import scipy.stats as stats
 
 from load_data import assign_label, load_biconditional_events_general, vdm_assign_label
 from core import Rat, combine_rats
@@ -48,7 +49,7 @@ for rat in rats:
     for outcome in ['rewarded', 'unrewarded']:
         outcome_df = duration_df[duration_df['rewarded'] == 'sound ' + outcome]
         rat_df = outcome_df[outcome_df['rat'] == rat]
-        print(outcome, ':', rat_df['value'].mean())
+        print(outcome, ':', rat_df['value'].mean(), '+/-', stats.sem(rat_df['value']))
 
 
 # rat in recording box
@@ -75,4 +76,4 @@ print(rat)
 for outcome in ['rewarded', 'unrewarded']:
     outcome_df = duration_df[duration_df['rewarded'] == 'sound ' + outcome]
     rat_df = outcome_df[outcome_df['rat'] == rat]
-    print(outcome, ':', rat_df['value'].mean())
+    print(outcome, ':', rat_df['value'].mean(), '+/-', stats.sem(rat_df['value']))
