@@ -11,8 +11,8 @@ output_filepath = os.path.join(thisdir, 'plots', 'winter2017')
 
 magazine_session = 'R115-2017-01-17-Events.nev'
 c_photobeams = ['R115-2017-01-26-Events.nev']
-missing_events = ['R115-2017-02-11-Events.nev']
-missing_value = [('sound1_on', 6, 'sound1_off')]
+missing_events = ['R115-2017-02-11-Events.nev', 'R115-2017-02-16-Events.nev']
+missing_value = [('sound1_on', 6, 'sound1_off'), ('sound1_on', 3, 'sound1_off')]
 
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
