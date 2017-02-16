@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import vdmlab as vdm
+import nept
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 dataloc = os.path.abspath(os.path.join(thisdir, 'cache', 'data', 'vdmlab'))
@@ -61,7 +61,7 @@ def assign_label(data, min_duration=0.027):
     -------
     rats_data: dict
         With mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4 as keys.
-        Each contains vdmlab.Epoch objects
+        Each contains nept.Epoch objects
 
     """
     mag_start = np.array(data[1])
@@ -88,16 +88,16 @@ def assign_label(data, min_duration=0.027):
     trial4_end = np.array(data[19])
 
     rats_data = dict()
-    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
-    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
-    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
-    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
-    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
-    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
-    rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_end-trial1_start)
-    rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_end-trial2_start)
-    rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_end-trial3_start)
-    rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_end-trial4_start)
+    rats_data['mags'] = nept.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = nept.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = nept.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = nept.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = nept.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = nept.Epoch(sound2_start, sound2_end-sound2_start)
+    rats_data['trial1'] = nept.Epoch(trial1_start, trial1_end-trial1_start)
+    rats_data['trial2'] = nept.Epoch(trial2_start, trial2_end-trial2_start)
+    rats_data['trial3'] = nept.Epoch(trial3_start, trial3_end-trial3_start)
+    rats_data['trial4'] = nept.Epoch(trial4_start, trial4_end-trial4_start)
 
     min_epoch_data = dict()
     for key in rats_data:
@@ -118,7 +118,7 @@ def assign_medpc_label(data):
     -------
     rats_data: dict
         With mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4 as keys.
-        Each contains vdmlab.Epoch objects
+        Each contains nept.Epoch objects
 
     """
     mag_start = np.array(data[1])
@@ -137,12 +137,12 @@ def assign_medpc_label(data):
     sound2_end = np.array(data[11])
 
     rats_data = dict()
-    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
-    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
-    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
-    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
-    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
-    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
+    rats_data['mags'] = nept.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = nept.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = nept.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = nept.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = nept.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = nept.Epoch(sound2_start, sound2_end-sound2_start)
 
     return rats_data
 
@@ -164,7 +164,7 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     -------
     rats_data: dict
         With mags, pellets, lights1, lights2, sounds1, sounds2 as keys.
-        Each contains vdmlab.Epoch objects
+        Each contains nept.Epoch objects
 
     """
     ons = ['light1_on', 'light2_on', 'sound1_on', 'sound2_on']
@@ -196,16 +196,16 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     trial4_end = trial4_start + trial_duration
 
     rats_data = dict()
-    rats_data['mags'] = vdm.Epoch(mag_start, mag_end-mag_start)
-    rats_data['pellets'] = vdm.Epoch(pel_start, pel_end-pel_start)
-    rats_data['lights1'] = vdm.Epoch(light1_start, light1_end-light1_start)
-    rats_data['lights2'] = vdm.Epoch(light2_start, light2_end-light2_start)
-    rats_data['sounds1'] = vdm.Epoch(sound1_start, sound1_end-sound1_start)
-    rats_data['sounds2'] = vdm.Epoch(sound2_start, sound2_end-sound2_start)
-    rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_end-trial1_start)
-    rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_end-trial2_start)
-    rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_end-trial3_start)
-    rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_end-trial4_start)
+    rats_data['mags'] = nept.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = nept.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = nept.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = nept.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = nept.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['sounds2'] = nept.Epoch(sound2_start, sound2_end-sound2_start)
+    rats_data['trial1'] = nept.Epoch(trial1_start, trial1_end-trial1_start)
+    rats_data['trial2'] = nept.Epoch(trial2_start, trial2_end-trial2_start)
+    rats_data['trial3'] = nept.Epoch(trial3_start, trial3_end-trial3_start)
+    rats_data['trial4'] = nept.Epoch(trial4_start, trial4_end-trial4_start)
 
     return rats_data
 
@@ -241,7 +241,7 @@ def load_biconditional_events_old(filename):
     labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).'
     labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
 
-    events = vdm.load_events(filename, labels)
+    events = nept.load_events(filename, labels)
     events = correct_sounds(events)
 
     return events
@@ -288,7 +288,7 @@ def load_biconditional_events_general(filename, photobeam, missing_start=True):
     else:
         raise ValueError("must specify which photobeam used")
 
-    events = vdm.load_events(filename, labels)
+    events = nept.load_events(filename, labels)
     events = correct_sounds(events)
 
     return events
@@ -366,10 +366,10 @@ def remove_trial_events(events, remove_trial, trial_duration=25):
     trial4_stop = trial4_start + trial_duration
 
     rats_data = dict()
-    rats_data['trial1'] = vdm.Epoch(trial1_start, trial1_stop-trial1_start)
-    rats_data['trial2'] = vdm.Epoch(trial2_start, trial2_stop-trial2_start)
-    rats_data['trial3'] = vdm.Epoch(trial3_start, trial3_stop-trial3_start)
-    rats_data['trial4'] = vdm.Epoch(trial4_start, trial4_stop-trial4_start)
+    rats_data['trial1'] = nept.Epoch(trial1_start, trial1_stop-trial1_start)
+    rats_data['trial2'] = nept.Epoch(trial2_start, trial2_stop-trial2_start)
+    rats_data['trial3'] = nept.Epoch(trial3_start, trial3_stop-trial3_start)
+    rats_data['trial4'] = nept.Epoch(trial4_start, trial4_stop-trial4_start)
 
     filtered = events
 

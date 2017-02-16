@@ -1,5 +1,5 @@
 import numpy as np
-import vdmlab as vdm
+import nept
 import pandas as pd
 from broken_session import fix_missing_trials
 
@@ -12,7 +12,7 @@ class Session:
 
     def add_trial(self, epoch, cue, trial_type):
         """Adds trial to session
-        epoch: vdmlab.Epoch object
+        epoch: nept.Epoch object
         cue: str
             Typically either 'light' or 'sound'
         trial_type: int

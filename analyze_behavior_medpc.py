@@ -1,5 +1,5 @@
 import os
-import vdmlab as vdm
+import nept
 from core import Rat, combine_rats
 from load_data import assign_label
 from plotting import plot_behavior
@@ -26,7 +26,7 @@ for rat in rats:
     data[rat] = Rat(rat, group1, group2)
 
 for session in sessions:
-    rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_label)
+    rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_label)
 
     for rat, group in zip(rats, groups):
         data[rat].add_session(**rats_data[rat], group=group)

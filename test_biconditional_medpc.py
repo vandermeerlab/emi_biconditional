@@ -1,13 +1,13 @@
 import os
 import numpy as np
-import vdmlab as vdm
+import nept
 from core import Rat, combine_rats
 from load_data import assign_medpc_label
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 roborats = os.path.join(thisdir, 'cache', 'other', '!roborats')
 
-rats_data = vdm.load_medpc(roborats, assign_medpc_label)
+rats_data = nept.load_medpc(roborats, assign_medpc_label)
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
 group1 = ['1', '3', '5', '7']

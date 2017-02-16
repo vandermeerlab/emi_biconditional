@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 
-import vdmlab as vdm
+import nept
 from core import Rat
 from load_data import assign_label, load_biconditional_events_general, vdm_assign_label
 
@@ -26,7 +26,7 @@ if this_rat in rats:
     for rat in rats:
         data[rat] = Rat(rat, group1, group2)
 
-    rats_data = vdm.load_medpc(filename, assign_label)
+    rats_data = nept.load_medpc(filename, assign_label)
 
 elif this_rat == other_rat:
     filename = os.path.join(data_filepath, 'R115-' + session_id + '-Events.nev')
@@ -35,7 +35,7 @@ elif this_rat == other_rat:
     data = dict()
     data[other_rat] = Rat(other_rat, group2)
 
-    events = load_biconditional_events_general(filename)
+    events = load_biconditional_events_general(filename, photobeam='zero')
 
     rats_data = dict()
     rats_data[other_rat] = vdm_assign_label(events)
@@ -46,7 +46,7 @@ else:
 trial_order = []
 for trial in ['trial1', 'trial2', 'trial3', 'trial4']:
     for start, stop in zip(rats_data[this_rat][trial].starts, rats_data[this_rat][trial].stops):
-        trial_order.append((trial, vdm.Epoch(start, stop-start)))
+        trial_order.append((trial, nept.Epoch(start, stop-start)))
 
 ordered = sorted(trial_order, key=lambda x: x[1].start)
 

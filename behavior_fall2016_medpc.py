@@ -1,5 +1,5 @@
 import os
-import vdmlab as vdm
+import nept
 from core import Rat, combine_rats
 from load_data import assign_medpc_label
 from plotting import plot_behavior
@@ -35,8 +35,8 @@ for rat in rats:
 
 broken_a = os.path.join(data_filepath, broken_sessions[0])
 broken_b = os.path.join(data_filepath, broken_sessions[1])
-rats_data_a = vdm.load_medpc(broken_a, assign_medpc_label)
-rats_data_b = vdm.load_medpc(broken_b, assign_medpc_label)
+rats_data_a = nept.load_medpc(broken_a, assign_medpc_label)
+rats_data_b = nept.load_medpc(broken_b, assign_medpc_label)
 
 for rat in rats_data_a:
     for key in rats_data_a[rat]:
@@ -45,7 +45,7 @@ for rat in rats:
     data[rat].add_session_medpc(**rats_data_b[rat])
 
 for session in sessions:
-    rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_medpc_label)
+    rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_medpc_label)
 
     for rat in rats:
         data[rat].add_session_medpc(**rats_data[rat])

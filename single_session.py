@@ -3,7 +3,7 @@ import scipy.stats as stats
 
 from load_data import assign_label, load_biconditional_events_general, vdm_assign_label
 from core import Rat, combine_rats
-import vdmlab as vdm
+import nept
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'winter2017')
@@ -33,7 +33,7 @@ for rat in rats:
     data[rat] = Rat(rat, group1, group2)
 
 filename = os.path.join(data_filepath, '!' + session_id)
-rats_data = vdm.load_medpc(filename, assign_label)
+rats_data = nept.load_medpc(filename, assign_label)
 
 for rat, group in zip(rats, groups):
     data[rat].add_session(**rats_data[rat], group=group)

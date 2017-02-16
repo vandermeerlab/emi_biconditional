@@ -1,7 +1,7 @@
 import os
 
 from load_data import assign_label, load_biconditional_events_general, vdm_assign_label
-import vdmlab as vdm
+import nept
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'winter2017')
@@ -45,7 +45,7 @@ other_rat = 'R115'
 
 # rats in medpc boxes
 filename = os.path.join(data_filepath, '!' + session_id)
-data = vdm.load_medpc(filename, assign_label)
+data = nept.load_medpc(filename, assign_label)
 
 for rat in rats:
     print(rat, ':')
