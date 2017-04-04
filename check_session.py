@@ -4,7 +4,7 @@ from load_data import assign_label, load_biconditional_events_general, vdm_assig
 import nept
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
-data_filepath = os.path.join(thisdir, 'cache', 'data', 'winter2017')
+data_filepath = os.path.join(thisdir, 'cache', 'data', 'spring2017')
 
 # Finds newest session id
 this_id = 0
@@ -19,6 +19,7 @@ for file in sorted(os.listdir(data_filepath)):
 # Otherwise this checks only the newest session.
 # session_id = '2017-01-19'
 print('checking session:', session_id)
+
 
 def check_session(data, n_unique_trial=8, n_feeder=16, n_light=16, n_sound=16, n_mags=0):
     for trial in ['trial1', 'trial2', 'trial3', 'trial4']:
@@ -40,8 +41,7 @@ def check_session(data, n_unique_trial=8, n_feeder=16, n_light=16, n_sound=16, n
 
     print('passed')
 
-rats = ['R120', 'R121', 'R118', 'R119', 'R116', 'R117', 'R114']
-other_rat = 'R115'
+rats = ['R141', 'R142', 'R143', 'R144', 'R145', 'R146', 'R147', 'R148']
 
 # rats in medpc boxes
 filename = os.path.join(data_filepath, '!' + session_id)
@@ -50,15 +50,3 @@ data = nept.load_medpc(filename, assign_label)
 for rat in rats:
     print(rat, ':')
     check_session(data[rat])
-
-# rat in recording box
-rec_filename = os.path.join(data_filepath, 'R115-' + session_id + '-Events.nev')
-events = load_biconditional_events_general(rec_filename, photobeam='zero')
-# events = load_biconditional_events_general(rec_filename, photobeam='c')
-rec_data = vdm_assign_label(events)
-
-rat = other_rat
-print(rat, ':')
-check_session(rec_data)
-
-
