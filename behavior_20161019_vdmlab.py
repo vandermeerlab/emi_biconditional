@@ -20,18 +20,19 @@ import info.R105d5 as R105d5
 import info.R105d6 as R105d6
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
-data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab')
-output_filepath = os.path.join(thisdir, 'plots')
+data_filepath = os.path.join(thisdir, 'cache', 'data', 'vdmlab_fall2016')
+output_filepath = os.path.join(thisdir, 'plots', 'fall2016')
 
 rat5_sessions = [RH05d1, RH05d2, RH05d3, RH05d4, RH05d5, RH05d6]
 rat8_sessions = [R105d1, R105d2, R105d3, R105d4, R105d5, R105d6]
 all_sessions = [rat5_sessions, rat8_sessions]
 
 rats = ['5', '8']
+groups = [1, 2]
 group1 = ['5']
 group2 = ['8']
 
-for rat, sessions in zip(rats, all_sessions):
+for rat, sessions, group in zip(rats, all_sessions, groups):
     data = dict()
     data[rat] = Rat(rat, group1, group2)
 
@@ -44,7 +45,7 @@ for rat, sessions in zip(rats, all_sessions):
             rats_data = vdm_assign_label(events, min_n_trials=16)
         else:
             rats_data = vdm_assign_label(events)
-        data[rat].add_session(**rats_data)
+        data[rat].add_session(**rats_data, group=group)
 
     n_sessions = len(data[rat].sessions)
 

@@ -1,5 +1,5 @@
 import os
-import vdmlab as vdm
+import nept
 from core import Rat, combine_rats
 from load_data import assign_medpc_label
 from plotting import plot_behavior
@@ -7,7 +7,7 @@ from plotting import plot_behavior
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'med_fall2016')
-output_filepath = os.path.join(thisdir, 'plots', 'med_fall2016')
+output_filepath = os.path.join(thisdir, 'plots', 'fall2016')
 
 broken_sessions = ['!2016-10-19a1', '!2016-10-19a2']
 extended = ['!2016-11-28', '!2016-11-29', '!2016-11-30', '!2016-12-01', '!2016-12-02', '!2016-12-03',
@@ -35,8 +35,8 @@ for rat in rats:
 
 broken_a = os.path.join(data_filepath, broken_sessions[0])
 broken_b = os.path.join(data_filepath, broken_sessions[1])
-rats_data_a = vdm.load_medpc(broken_a, assign_medpc_label)
-rats_data_b = vdm.load_medpc(broken_b, assign_medpc_label)
+rats_data_a = nept.load_medpc(broken_a, assign_medpc_label)
+rats_data_b = nept.load_medpc(broken_b, assign_medpc_label)
 
 for rat in rats_data_a:
     for key in rats_data_a[rat]:
@@ -45,7 +45,7 @@ for rat in rats:
     data[rat].add_session_medpc(**rats_data_b[rat])
 
 for session in sessions:
-    rats_data = vdm.load_medpc(os.path.join(data_filepath, session), assign_medpc_label)
+    rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_medpc_label)
 
     for rat in rats:
         data[rat].add_session_medpc(**rats_data[rat])

@@ -1,5 +1,5 @@
 import numpy as np
-import vdmlab as vdm
+import nept
 import pandas as pd
 from broken_session import fix_missing_trials
 
@@ -12,7 +12,7 @@ class Session:
 
     def add_trial(self, epoch, cue, trial_type):
         """Adds trial to session
-        epoch: vdmlab.Epoch object
+        epoch: nept.Epoch object
         cue: str
             Typically either 'light' or 'sound'
         trial_type: int
@@ -80,20 +80,41 @@ class Rat:
         else:
             raise ValueError("rat id is incorrect. Should be in group1 or group2")
 
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4):
+    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
+                    group=False):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
         session = Session(mags, pellets)
 
-        trials = [trial1, trial2, trial3, trial4]
-        lights = [lights1, lights2]
-        sounds = [sounds1, sounds2]
+        if group == 1:
+            for single_trial in trial1:
+                session.add_trial(single_trial.intersect(lights1), 'light', 1)
+                session.add_trial(single_trial.intersect(sounds2), 'sound', 1)
+            for single_trial in trial2:
+                session.add_trial(single_trial.intersect(lights1), 'light', 2)
+                session.add_trial(single_trial.intersect(sounds1), 'sound', 2)
+            for single_trial in trial3:
+                session.add_trial(single_trial.intersect(lights2), 'light', 3)
+                session.add_trial(single_trial.intersect(sounds1), 'sound', 3)
+            for single_trial in trial4:
+                session.add_trial(single_trial.intersect(lights2), 'light', 4)
+                session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
 
-        for i, trial in enumerate(trials):
-            for single_trial in trial:
-                for light in lights:
-                    session.add_trial(single_trial.intersect(light), 'light', i+1)
-                for sound in sounds:
-                    session.add_trial(single_trial.intersect(sound), 'sound', i+1)
+        elif group == 2:
+            for single_trial in trial1:
+                session.add_trial(single_trial.intersect(lights2), 'light', 1)
+                session.add_trial(single_trial.intersect(sounds2), 'sound', 1)
+            for single_trial in trial2:
+                session.add_trial(single_trial.intersect(lights2), 'light', 2)
+                session.add_trial(single_trial.intersect(sounds1), 'sound', 2)
+            for single_trial in trial3:
+                session.add_trial(single_trial.intersect(lights1), 'light', 3)
+                session.add_trial(single_trial.intersect(sounds1), 'sound', 3)
+            for single_trial in trial4:
+                session.add_trial(single_trial.intersect(lights1), 'light', 4)
+                session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
+
+        else:
+            raise ValueError("must specify a group")
 
         self.sessions.append(session)
 
