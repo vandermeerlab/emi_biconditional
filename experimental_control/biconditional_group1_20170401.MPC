@@ -304,7 +304,7 @@ S.S.2,
 
     \ auditory cue on (after a 1sec delay that follows the visual cue)
     s13,
-        1": if (R = 2) or (R = 3) [@sounds1, @sounds2]
+        2": if (R = 2) or (R = 3) [@sounds1, @sounds2]
             @sounds1: ~ToneOn(MG,BOX);~; set B(Z)=^sound1S+X/100; add Z; on ^led ---> s14
             @sounds2: ~ToneOn(MG,BOX);~; set B(Z)=^sound2S+X/100; add Z ---> s15
 
