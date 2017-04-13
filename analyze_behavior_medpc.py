@@ -9,7 +9,7 @@ thisdir = os.path.dirname(os.path.realpath(__file__))
 data_filepath = os.path.join(thisdir, 'cache', 'data', 'spring2017')
 output_filepath = os.path.join(thisdir, 'plots', 'spring2017')
 
-magazine_session = '!2017-04-??'
+magazine_session = '!2017-04-14'
 
 sessions = []
 for file in sorted(os.listdir(data_filepath)):
@@ -17,7 +17,7 @@ for file in sorted(os.listdir(data_filepath)):
         sessions.append(os.path.join(data_filepath, file))
 
 rats = ['R141', 'R142', 'R143', 'R144', 'R145', 'R146', 'R147', 'R148']
-groups = [1, 2, 2, 1, 2, 1, 2]
+groups = [1, 2, 2, 1, 2, 1, 1, 2]
 males = ['R141', 'R143', 'R145', 'R147']
 females = ['R142', 'R144', 'R146', 'R148']
 group1 = ['R141', 'R144', 'R146', 'R147']
@@ -44,6 +44,12 @@ if 1:
         filepath = os.path.join(output_filepath, filename)
         plot_behavior(df, [rat], filepath, by_outcome=True)
 
+if 1:
+    for rat in rats:
+        filename = rat + '_outcome_duration.png'
+        filepath = os.path.join(output_filepath, filename)
+        plot_duration(df, [rat], filepath, by_outcome=True, ymax=10.)
+
 if 0:
     for rat in rats:
         filename = rat + '_behavior.png'
@@ -63,9 +69,3 @@ if 0:
             else:
                 filepath = os.path.join(output_filepath, filenames[i])
             plot_behavior(df, rat, filepath, by_outcome=by_outcome)
-
-if 0:
-    for rat in rats:
-        filename = rat + '_outcome_duration.png'
-        filepath = os.path.join(output_filepath, filename)
-        plot_duration(df, [rat], filepath, by_outcome=True, ymax=10.)

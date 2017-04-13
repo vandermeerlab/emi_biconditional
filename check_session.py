@@ -17,7 +17,7 @@ for file in sorted(os.listdir(data_filepath)):
 
 # If interested in a particular session, uncomment below.
 # Otherwise this checks only the newest session.
-# session_id = '2017-01-19'
+# session_id = '2017-04-13'
 print('checking session:', session_id)
 
 
