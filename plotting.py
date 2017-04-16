@@ -74,7 +74,7 @@ def plot_duration(df, rats, filepath=None, only_sound=False, by_outcome=False, c
     else:
         colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac"]
 
-    duration = df.loc[df.measure == 'durations']
+    duration = rats_df.loc[rats_df.measure == 'durations']
 
     if by_outcome:
         colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac"]

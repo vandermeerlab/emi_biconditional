@@ -37,7 +37,6 @@ n_sessions = len(data[rats[0]].sessions)
 
 df = combine_rats(data, rats, n_sessions)
 
-
 if 1:
     for rat in rats:
         filename = rat + '_outcome_behavior.png'
@@ -56,16 +55,13 @@ if 0:
         filepath = os.path.join(output_filepath, filename)
         plot_behavior(df, [rat], filepath, by_outcome=False)
 
-if 0:
-    for by_outcome in [True, False]:
-        filenames = ['group1_trials_medpc.png', 'group2_trials_medpc.png', 'all-rats_trials_medpc.png']
-        outcome_filenames = ['group1_outcome_medpc.png', 'group2_outcome_medpc.png', 'all-rats_outcome_medpc.png',
-                             'female_outcome_medpc.png', 'male_outcome_medpc.png']
-        rat_groups = [group1, group2, rats, females, males]
+if 1:
+    by_outcome = True
 
-        for i, rat in enumerate(rat_groups):
-            if by_outcome:
-                filepath = os.path.join(output_filepath, outcome_filenames[i])
-            else:
-                filepath = os.path.join(output_filepath, filenames[i])
-            plot_behavior(df, rat, filepath, by_outcome=by_outcome)
+    filenames = ['group1_medpc.png', 'group2_medpc.png', 'all-rats_medpc.png',
+                 'female_medpc.png', 'male_medpc.png']
+    rat_groups = [group1, group2, rats, females, males]
+
+    for i, rat in enumerate(rat_groups):
+        filepath = os.path.join(output_filepath, filenames[i])
+        plot_duration(df, rat, filepath, by_outcome=by_outcome, ymax=10.)
