@@ -76,6 +76,8 @@ def plot_duration(df, rats, filepath=None, only_sound=False, by_outcome=False, c
 
     duration = rats_df.loc[rats_df.measure == 'durations']
 
+    f, ax = plt.subplots(figsize=(5, 4))
+
     if by_outcome:
         colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac"]
         ax = sns.tsplot(data=duration, time="session", unit="trial", condition="rewarded", value="value",
