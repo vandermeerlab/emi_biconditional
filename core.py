@@ -1,5 +1,4 @@
 import numpy as np
-import nept
 import pandas as pd
 from broken_session import fix_missing_trials
 
@@ -80,7 +79,7 @@ class Rat:
         else:
             raise ValueError("rat id is incorrect. Should be in group1 or group2")
 
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
+    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4, iti=None,
                     group=False):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
         session = Session(mags, pellets)
@@ -115,6 +114,10 @@ class Rat:
 
         else:
             raise ValueError("must specify a group")
+
+        if iti is not None:
+            for single_iti in iti:
+                session.add_trial(single_iti, 'iti', 5)
 
         self.sessions.append(session)
 

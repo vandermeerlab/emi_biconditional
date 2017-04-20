@@ -1,4 +1,6 @@
 import os
+import numpy as np
+
 import nept
 from core import Rat, combine_rats
 from load_data import assign_label
@@ -23,12 +25,23 @@ females = ['R142', 'R144', 'R146', 'R148']
 group1 = ['R141', 'R144', 'R146', 'R147']
 group2 = ['R142', 'R143', 'R145', 'R148']
 
+cue_duration = 10
+iti_buffer = 2
+
 data = dict()
 for rat in rats:
     data[rat] = Rat(rat, group1, group2)
 
 for session in sessions:
     rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_label)
+
+    for rat in rats:
+        iti_starts = []
+        iti_stops = []
+        for trial in ['trial1', 'trial2', 'trial3', 'trial4']:
+            iti_starts.extend(rats_data[rat][trial].starts - cue_duration - iti_buffer)
+            iti_stops.extend(rats_data[rat][trial].starts - iti_buffer)
+        rats_data[rat]['iti'] = nept.Epoch(np.vstack([iti_starts, iti_stops]))
 
     for rat, group in zip(rats, groups):
         data[rat].add_session(**rats_data[rat], group=group)

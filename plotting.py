@@ -16,13 +16,13 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
     rats_df = df[rat_idx]
 
     if only_sound:
-        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac"]
+        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac", 'k']
     else:
-        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac"]
+        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac", 'k']
 
     g = sns.FacetGrid(data=rats_df, col="measure", sharey=False, size=3, aspect=1.)
     if by_outcome:
-        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac"]
+        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac", 'k']
         g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="rewarded", value="value",
                         err_style="ci_band", ci=68, color=colours)
         legend_dist = 1.
@@ -70,16 +70,16 @@ def plot_duration(df, rats, filepath=None, only_sound=False, by_outcome=False, c
     rats_df = df[rat_idx]
 
     if only_sound:
-        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac"]
+        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac", 'k']
     else:
-        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac"]
+        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac", 'k']
 
     duration = rats_df.loc[rats_df.measure == 'durations']
 
     f, ax = plt.subplots(figsize=(5, 4))
 
     if by_outcome:
-        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac"]
+        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac", 'k']
         ax = sns.tsplot(data=duration, time="session", unit="trial", condition="rewarded", value="value",
                         err_style="ci_band", ci=68, color=colours)
         legend_dist = 1.
