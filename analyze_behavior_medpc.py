@@ -84,3 +84,14 @@ if 1:
     for i, rat in enumerate(rat_groups):
         filepath = os.path.join(output_filepath, filenames[i])
         plot_duration(df, rat, filepath, by_outcome=by_outcome, ymax=10., change_sessions=[11])
+
+if 0:
+    by_outcome = True
+
+    filenames = ['group1_medpc.png', 'group2_medpc.png', 'all-rats_medpc.png',
+                 'female_medpc.png', 'male_medpc.png']
+    rat_groups = [group1, group2, rats, females, males]
+
+    for i, rat in enumerate(rat_groups):
+        filepath = os.path.join(output_filepath, filenames[i])
+        plot_behavior(df, rat, filepath, by_outcome=by_outcome, change_sessions=[11])
