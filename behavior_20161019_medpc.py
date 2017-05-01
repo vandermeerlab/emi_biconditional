@@ -2,7 +2,7 @@ import os
 import nept
 from core import Rat, combine_rats
 from load_data import assign_medpc_label
-from plotting import plot_behavior
+from plotting import plot_behavior, plot_duration
 
 
 thisdir = os.path.dirname(os.path.realpath(__file__))
@@ -17,14 +17,14 @@ extended_sessions = []
 for file in sorted(os.listdir(data_filepath)):
     if file[0] == '!' and file not in broken_sessions and file not in extended:
         sessions.append(os.path.join(data_filepath, file))
-    if file[0] == '!' and file not in broken_sessions and file not in extended:
+    if file[0] == '!' and file not in broken_sessions and file in extended:
         extended_sessions.append(os.path.join(data_filepath, file))
 
 rats = ['1', '2', '3', '4', '5', '6', '7', '8']
 group1 = ['1', '3', '5', '7']
 group2 = ['2', '4', '6', '8']
 
-plot_extended = True
+plot_extended = False
 if plot_extended:
     rats = ['5', '8']
     sessions = extended_sessions
@@ -88,3 +88,18 @@ if 1:
             else:
                 filepath = os.path.join(output_filepath, filenames[i])
             plot_behavior(df, rat, filepath, only_sound=only_sound, by_outcome=by_outcome, change_sessions=[35, 46, 52])
+
+if 1:
+    for rat in rats:
+        filename = rat + '_outcome_duration.png'
+        filepath = os.path.join(output_filepath, filename)
+        plot_duration(df, [rat], filepath, by_outcome=True, ymax=10.)
+
+if 1:
+    by_outcome = True
+    filenames = ['group1_medpc.png', 'group2_medpc.png', 'all-rats_medpc.png']
+    rat_groups = [group1, group2, rats]
+
+    for i, rat in enumerate(rat_groups):
+        filepath = os.path.join(output_filepath, filenames[i])
+        plot_duration(df, rat, filepath, by_outcome=by_outcome, ymax=10.)
