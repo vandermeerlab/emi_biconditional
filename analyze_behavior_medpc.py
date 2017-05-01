@@ -58,6 +58,12 @@ if 1:
 
 if 1:
     for rat in rats:
+        filename = rat + '_outcome_duration.svg'
+        filepath = os.path.join(output_filepath, filename)
+        plot_duration(df, [rat], filepath, by_outcome=True, ymax=10.)
+
+if 1:
+    for rat in rats:
         filename = rat + '_outcome_duration.png'
         filepath = os.path.join(output_filepath, filename)
         plot_duration(df, [rat], filepath, by_outcome=True, ymax=10.)
