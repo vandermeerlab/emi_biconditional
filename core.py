@@ -1,3 +1,4 @@
+from collections import defaultdict
 import numpy as np
 import pandas as pd
 from broken_session import fix_missing_trials
@@ -207,19 +208,22 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
 
     for session in range(n_sessions):
         for rat in rats:
+            condition_counts = defaultdict(lambda: 0)
             for i, trial in enumerate(data[rat].sessions[session].trials):
+                condition = "%s %d" % (trial.cue, trial.trial_type)
                 for measure in measures:
                     if not only_sound or trial.cue == 'sound':
-                        together['trial'].append("%s, %d" % (rat, i))
+                        together['trial'].append("%s, %s, %d" % (rat, condition, condition_counts[condition]))
                         together['rat'].append(rat)
                         together['session'].append(session+1)
                         together['trial_type'].append(trial.trial_type)
                         together['rewarded'].append("%s %s" %
-                                                    (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
+                                                   (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
                         together['cue'].append(trial.cue)
-                        together['condition'].append("%s %d" % (trial.cue, trial.trial_type))
+                        together['condition'].append(condition)
                         together['measure'].append(measure)
                         together['value'].append(f_analyze(trial, measure))
+                condition_counts[condition] += 1
 
     df = pd.DataFrame(data=together)
 
@@ -231,18 +235,23 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
 
 def expand_32_trial_sessions(df):
 
+    def add_n_to_index(trial):
+        sp = trial.split(", ")
+        n = 32 if sp[1] == "iti 5" else 8
+        ix = int(sp[-1]) + n
+        return ", ".join(sp[:2] + [str(ix)])
+
     sessions = np.unique(df['session'])
+    rats = np.unique(df['rat'])
 
-    for session in sessions:
-        single_session = df[df['session'] == session].copy()
+    for rat in rats:
+        for session in sessions:
+            single_session = df[df['session'] == session]
+            single_session = single_session[single_session['rat'] == rat]
 
-        if int(len(single_session) / (3 * 4)) == 32:  # 3 light, sound, iti. 4 measures.
-            rat = single_session['rat'].iloc[0]
-            trials = []
-            for trial in range(len(single_session)):
-                trials.append('%s, %d' % (rat, int(trial/4)+97))
-            single_session['trial'] = trials
-
-            df = pd.concat([df, single_session], ignore_index=True)
+            if int(len(single_session) / (3 * 4)) == 32:  # 3 light, sound, iti. 4 measures.
+                single_session['trial'] = single_session['trial'].apply(add_n_to_index)
+                df = pd.concat([df, single_session], ignore_index=True)
 
     return df
+

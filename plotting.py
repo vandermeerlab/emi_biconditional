@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 import seaborn as sns
 
 sns.set_style("white")
@@ -21,6 +22,7 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
         colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61", "#d6604d", "#1b7837", "#2166ac", 'k']
 
     g = sns.FacetGrid(data=rats_df, col="measure", sharey=False, size=3, aspect=1.)
+    plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     if by_outcome:
         colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac", 'k']
         g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="rewarded", value="value",
@@ -88,6 +90,7 @@ def plot_duration(df, rats, filepath=None, only_sound=False, by_outcome=False, c
                         err_style="ci_band", ci=68, color=colours)
         legend_dist = 1.
 
+    plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     ax.set(xlabel='Session', ylabel='Duration in food cup (s)')
 
     if len(change_sessions) == 1:
