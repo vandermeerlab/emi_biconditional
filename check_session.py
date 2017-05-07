@@ -49,4 +49,4 @@ data = nept.load_medpc(filename, assign_label)
 
 for rat in rats:
     print(rat, ':')
-    check_session(data[rat])
+    check_session(data[rat], n_unique_trial=16, n_feeder=32, n_light=32, n_sound=32)

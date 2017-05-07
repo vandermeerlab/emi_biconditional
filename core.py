@@ -53,37 +53,8 @@ class Trial:
         self.responses = responses
 
 
-class Rat:
-    def __init__(self, rat_id, group1=None, group2=None):
-        self.rat_id = rat_id
-        self.group1 = group1
-        self.group2 = group2
-        self.sessions = []
-
-        self.sound_trials = {1: 'sounds2',
-                             2: 'sounds1',
-                             3: 'sounds1',
-                             4: 'sounds2'}
-
-        if group1 is not None and rat_id in group1:
-            self.light_trials = {1: 'lights1',
-                                 2: 'lights1',
-                                 3: 'lights2',
-                                 4: 'lights2'}
-
-        elif group2 is not None and rat_id in group2:
-            self.light_trials = {1: 'lights2',
-                                 2: 'lights2',
-                                 3: 'lights1',
-                                 4: 'lights1'}
-        else:
-            raise ValueError("rat id is incorrect. Should be in group1 or group2")
-
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4, iti=None,
-                    group=False):
-        """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
-        session = Session(mags, pellets)
-
+def add_all_trials(session, trial1, trial2, trial3, trial4,
+                    lights1, lights2, sounds1, sounds2, group, iti):
         if group == 1:
             for single_trial in trial1:
                 session.add_trial(single_trial.intersect(lights1), 'light', 1)
@@ -112,12 +83,47 @@ class Rat:
                 session.add_trial(single_trial.intersect(lights1), 'light', 4)
                 session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
 
-        else:
-            raise ValueError("must specify a group")
-
         if iti is not None:
             for single_iti in iti:
                 session.add_trial(single_iti, 'iti', 5)
+
+
+class Rat:
+    def __init__(self, rat_id, group1=None, group2=None):
+        self.rat_id = rat_id
+        self.group1 = group1
+        self.group2 = group2
+        self.sessions = []
+
+        self.sound_trials = {1: 'sounds2',
+                             2: 'sounds1',
+                             3: 'sounds1',
+                             4: 'sounds2'}
+
+        if group1 is not None and rat_id in group1:
+            self.light_trials = {1: 'lights1',
+                                 2: 'lights1',
+                                 3: 'lights2',
+                                 4: 'lights2'}
+
+        elif group2 is not None and rat_id in group2:
+            self.light_trials = {1: 'lights2',
+                                 2: 'lights2',
+                                 3: 'lights1',
+                                 4: 'lights1'}
+        else:
+            raise ValueError("rat id is incorrect. Should be in group1 or group2")
+
+    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
+                    iti=None, group=False):
+        """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
+        session = Session(mags, pellets)
+
+        if group not in [1, 2]:
+            raise ValueError("group must be either 1 or 2.")
+
+        add_all_trials(session, trial1, trial2, trial3, trial4,
+                       lights1, lights2, sounds1, sounds2, group, iti)
 
         self.sessions.append(session)
 
@@ -218,11 +224,25 @@ def combine_rats(data, rats, n_sessions, only_sound=False):
     df = pd.DataFrame(data=together)
 
     fix_missing_trials(df)
+    df = expand_32_trial_sessions(df)
 
     return df
 
 
+def expand_32_trial_sessions(df):
 
+    sessions = np.unique(df['session'])
 
+    for session in sessions:
+        single_session = df[df['session'] == session].copy()
 
+        if int(len(single_session) / (3 * 4)) == 32:  # 3 light, sound, iti. 4 measures.
+            rat = single_session['rat'].iloc[0]
+            trials = []
+            for trial in range(len(single_session)):
+                trials.append('%s, %d' % (rat, int(trial/4)+97))
+            single_session['trial'] = trials
 
+            df = pd.concat([df, single_session], ignore_index=True)
+
+    return df
