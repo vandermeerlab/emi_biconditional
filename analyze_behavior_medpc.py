@@ -41,13 +41,28 @@ for session in sessions:
         for trial in ['trial1', 'trial2', 'trial3', 'trial4']:
             iti_starts.extend(rats_data[rat][trial].starts - cue_duration - iti_buffer)
             iti_stops.extend(rats_data[rat][trial].starts - iti_buffer)
+
         rats_data[rat]['iti'] = nept.Epoch(np.vstack([iti_starts, iti_stops]))
+
+        post_rewarded_starts = []
+        post_rewarded_stops = []
+        for trial in ['trial2', 'trial4']:
+            post_rewarded_starts.extend(rats_data[rat][trial].stops)
+            post_rewarded_stops.extend(rats_data[rat][trial].stops + cue_duration)
+        rats_data[rat]['post_rewarded'] = nept.Epoch(np.vstack([post_rewarded_starts, post_rewarded_stops]))
+
+        post_unrewarded_starts = []
+        post_unrewarded_stops = []
+        for trial in ['trial1', 'trial3']:
+            post_unrewarded_starts.extend(rats_data[rat][trial].stops)
+            post_unrewarded_stops.extend(rats_data[rat][trial].stops + cue_duration)
+        rats_data[rat]['post_unrewarded'] = nept.Epoch(np.vstack([post_unrewarded_starts, post_unrewarded_stops]))
 
     for rat, group in zip(rats, groups):
         data[rat].add_session(**rats_data[rat], group=group)
 
 n_sessions = len(data[rats[0]].sessions)
-print('session:', n_sessions)
+print('n_sessions:', n_sessions)
 
 df = combine_rats(data, rats, n_sessions)
 

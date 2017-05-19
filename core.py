@@ -54,8 +54,8 @@ class Trial:
         self.responses = responses
 
 
-def add_all_trials(session, trial1, trial2, trial3, trial4,
-                    lights1, lights2, sounds1, sounds2, group, iti):
+def add_all_trials(session, trial1, trial2, trial3, trial4, lights1, lights2, sounds1, sounds2,
+                   group, iti, post_rewarded, post_unrewarded):
         if group == 1:
             for single_trial in trial1:
                 session.add_trial(single_trial.intersect(lights1), 'light', 1)
@@ -88,6 +88,14 @@ def add_all_trials(session, trial1, trial2, trial3, trial4,
             for single_iti in iti:
                 session.add_trial(single_iti, 'iti', 5)
 
+        if post_rewarded is not None:
+            for single_post in post_rewarded:
+                session.add_trial(single_post, 'post CS', 6)
+
+        if post_unrewarded is not None:
+            for single_post in post_unrewarded:
+                session.add_trial(single_post, 'post CS', 7)
+
 
 class Rat:
     def __init__(self, rat_id, group1=None, group2=None):
@@ -116,7 +124,7 @@ class Rat:
             raise ValueError("rat id is incorrect. Should be in group1 or group2")
 
     def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
-                    iti=None, group=False):
+                    iti=None, group=False, post_rewarded=None, post_unrewarded=None):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
         session = Session(mags, pellets)
 
@@ -124,7 +132,7 @@ class Rat:
             raise ValueError("group must be either 1 or 2.")
 
         add_all_trials(session, trial1, trial2, trial3, trial4,
-                       lights1, lights2, sounds1, sounds2, group, iti)
+                       lights1, lights2, sounds1, sounds2, group, iti, post_rewarded, post_unrewarded)
 
         self.sessions.append(session)
 
@@ -237,7 +245,12 @@ def expand_32_trial_sessions(df):
 
     def add_n_to_index(trial):
         sp = trial.split(", ")
-        n = 32 if sp[1] == "iti 5" else 8
+        if sp[1] == "iti 5":
+            n = 32
+        elif sp[1] == "post CS 6" or sp[1] == "post CS 7":
+            n = 16
+        else:
+            n = 8
         ix = int(sp[-1]) + n
         return ", ".join(sp[:2] + [str(ix)])
 
@@ -249,9 +262,10 @@ def expand_32_trial_sessions(df):
             single_session = df[df['session'] == session]
             single_session = single_session[single_session['rat'] == rat]
 
-            if int(len(single_session) / (3 * 4)) == 32:  # 3 light, sound, iti. 4 measures.
+            n_events = len(single_session)
+
+            if (n_events / (4 * 4)) == 32:  # 4 light, sound, iti, post. 4 measures.
                 single_session['trial'] = single_session['trial'].apply(add_n_to_index)
                 df = pd.concat([df, single_session], ignore_index=True)
 
     return df
-
