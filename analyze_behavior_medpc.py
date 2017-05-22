@@ -42,7 +42,7 @@ for session in sessions:
             iti_starts.extend(rats_data[rat][trial].starts - cue_duration - iti_buffer)
             iti_stops.extend(rats_data[rat][trial].starts - iti_buffer)
 
-        rats_data[rat]['iti'] = nept.Epoch(np.vstack([iti_starts, iti_stops]))
+        rats_data[rat]['pre_cs'] = nept.Epoch(np.vstack([iti_starts, iti_stops]))
 
         post_rewarded_starts = []
         post_rewarded_stops = []

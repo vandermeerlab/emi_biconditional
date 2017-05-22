@@ -55,7 +55,7 @@ class Trial:
 
 
 def add_all_trials(session, trial1, trial2, trial3, trial4, lights1, lights2, sounds1, sounds2,
-                   group, iti, post_rewarded, post_unrewarded):
+                   group, pre_cs, post_rewarded, post_unrewarded):
         if group == 1:
             for single_trial in trial1:
                 session.add_trial(single_trial.intersect(lights1), 'light', 1)
@@ -84,9 +84,9 @@ def add_all_trials(session, trial1, trial2, trial3, trial4, lights1, lights2, so
                 session.add_trial(single_trial.intersect(lights1), 'light', 4)
                 session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
 
-        if iti is not None:
-            for single_iti in iti:
-                session.add_trial(single_iti, 'iti', 5)
+        if pre_cs is not None:
+            for single_pre in pre_cs:
+                session.add_trial(single_pre, 'pre CS', 5)
 
         if post_rewarded is not None:
             for single_post in post_rewarded:
@@ -124,7 +124,7 @@ class Rat:
             raise ValueError("rat id is incorrect. Should be in group1 or group2")
 
     def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
-                    iti=None, group=False, post_rewarded=None, post_unrewarded=None):
+                    pre_cs=None, group=False, post_rewarded=None, post_unrewarded=None):
         """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
         session = Session(mags, pellets)
 
@@ -132,7 +132,7 @@ class Rat:
             raise ValueError("group must be either 1 or 2.")
 
         add_all_trials(session, trial1, trial2, trial3, trial4,
-                       lights1, lights2, sounds1, sounds2, group, iti, post_rewarded, post_unrewarded)
+                       lights1, lights2, sounds1, sounds2, group, pre_cs, post_rewarded, post_unrewarded)
 
         self.sessions.append(session)
 
@@ -245,7 +245,7 @@ def expand_32_trial_sessions(df):
 
     def add_n_to_index(trial):
         sp = trial.split(", ")
-        if sp[1] == "iti 5":
+        if sp[1] == "pre CS 5":
             n = 32
         elif sp[1] == "post CS 6" or sp[1] == "post CS 7":
             n = 16
@@ -264,7 +264,7 @@ def expand_32_trial_sessions(df):
 
             n_events = len(single_session)
 
-            if (n_events / (4 * 4)) == 32:  # 4 light, sound, iti, post. 4 measures.
+            if (n_events / (4 * 4)) == 32:  # 4 (light, sound, pre-CS, post-CS) and 4 (measures).
                 single_session['trial'] = single_session['trial'].apply(add_n_to_index)
                 df = pd.concat([df, single_session], ignore_index=True)
 
