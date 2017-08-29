@@ -1,7 +1,7 @@
 import os
 import scipy.stats as stats
 
-from load_data import assign_label, load_biconditional_events_general, vdm_assign_label
+from load_data import assign_label, load_biconditional_events_general, vdm_assign_label, assign_label_prepost
 from core import Rat, combine_rats
 import nept
 

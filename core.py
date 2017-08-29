@@ -90,11 +90,11 @@ def add_all_trials(session, trial1, trial2, trial3, trial4, lights1, lights2, so
 
         if post_rewarded is not None:
             for single_post in post_rewarded:
-                session.add_trial(single_post, 'post CS', 6)
+                session.add_trial(single_post, 'post US', 6)
 
         if post_unrewarded is not None:
             for single_post in post_unrewarded:
-                session.add_trial(single_post, 'post CS', 7)
+                session.add_trial(single_post, 'post US', 7)
 
 
 class Rat:
