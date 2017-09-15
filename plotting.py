@@ -1,3 +1,6 @@
+import errno
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
@@ -7,32 +10,47 @@ sns.set_style("white")
 sns.set_style("ticks")
 
 
-def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, change_sessions=None, xlim=None):
+def mkdirs(dirs):
+    try:
+        os.makedirs(dirs)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+
+def add_col(df, name, *columns):
+    fmt = ", ".join(["{}" for _ in range(len(columns))])
+
+    def to_apply(row):
+        return fmt.format(*(row[col] for col in columns))
+    return df.assign(**{name: df.apply(to_apply, axis="columns")})
+
+
+def plot_behavior(df, rats, filepath=None, colours=None, only_sound=False, by_outcome=False,
+                  change_sessions=None, xlim=None, measure=None):
     if change_sessions is None:
         change_sessions = []
+    if colours is None:
+        raise ValueError("must specify a list of colours")
 
     rat_idx = np.zeros(len(df), dtype=bool)
     for rat in rats:
-        rat_idx = rat_idx | (df['rat'] == rat)
+        rat_idx = rat_idx | (df['rat'] == rat.rat_id)
     rats_df = df[rat_idx]
 
-    if only_sound:
-        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac", 'k', '#fe9929', '#f768a1']
-    else:
-        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61",
-                   "#d6604d", "#1b7837", "#2166ac", 'k', '#fe9929', '#f768a1']
+    if measure is not None:
+        rats_df = rats_df.loc[rats_df.measure == measure]
 
-    g = sns.FacetGrid(data=rats_df, col="measure", sharey=False, size=3, aspect=1.)
     plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     if by_outcome:
-        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac", 'k', '#fe9929', '#f768a1']
-        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="rewarded", value="value",
-                        err_style="ci_band", ci=68, color=colours)
-        legend_dist = 1.
+        rats_df = add_col(rats_df, "unit", "cue", "rat", "trial")
+        rats_df = add_col(rats_df, "condition", "cue_type", "rewarded")
     else:
-        g.map_dataframe(sns.tsplot, time="session", unit="trial", condition="condition", value="value",
-                        err_style="ci_band", ci=68, color=colours)
-        legend_dist = 1.
+        rats_df = add_col(rats_df, "unit", "rat", "trial")
+        rats_df = add_col(rats_df, "condition", "cue", "rewarded")
+    g = sns.FacetGrid(data=rats_df, col="measure", sharey=False, size=3, aspect=1.)
+    g.map_dataframe(sns.tsplot, time="session", unit="unit", condition="condition", value="value",
+                    err_style="ci_band", ci=68, color=colours)
     g.set_axis_labels("Session", "Value")
     for ax, label in zip(g.axes[0], ["Duration in food cup (s)",
                                      "# of entries",
@@ -53,66 +71,39 @@ def plot_behavior(df, rats, filepath=None, only_sound=False, by_outcome=False, c
             ax.set_xlim(xlim)
 
     plt.tight_layout()
-    plt.legend(bbox_to_anchor=(legend_dist, 1.))
+    handles, labels = ax.get_legend_handles_labels()
+    sortedhl = sorted(zip(handles, labels), key=lambda x: x[1])
+    plt.legend(*zip(*sortedhl), bbox_to_anchor=(1., 1.))
     if filepath is not None:
+        mkdirs(os.path.dirname(filepath))
         plt.savefig(filepath, bbox_inches='tight')
         plt.close()
     else:
         plt.show()
 
 
-def plot_duration(df, rats, filepath=None, only_sound=False, by_outcome=False, change_sessions=None,
-                  xlim=None, ymax=None):
-
-    if change_sessions is None:
-        change_sessions = []
-
+def plot_overtime(df, rats, filepath=None):
     rat_idx = np.zeros(len(df), dtype=bool)
     for rat in rats:
-        rat_idx = rat_idx | (df['rat'] == rat)
+        rat_idx = rat_idx | (df['rat'] == rat.rat_id)
     rats_df = df[rat_idx]
 
-    if only_sound:
-        colours = ["#4393c3", "#b2182b", "#d6604d", "#2166ac", 'k', '#fe9929', '#f768a1']
-    else:
-        colours = ["#9970ab", "#4393c3", "#762a83", "#b2182b", "#5aae61",
-                   "#d6604d", "#1b7837", "#2166ac", 'k', '#fe9929', '#f768a1']
+    df = add_col(df, "unit", "rat", "trial")
+    g = sns.FacetGrid(data=df, col="duration", sharey=False, size=3, aspect=1.)
+    g.map_dataframe(sns.tsplot, time="time_start", unit="unit", condition="cue", value="value",
+                    err_style="ci_band", ci=68, color="deep")
 
-    duration = rats_df.loc[rats_df.measure == 'durations']
+    for ax in g.axes[0]:
+        ax.set_ylabel("Duration in food cup (s)")
 
-    f, ax = plt.subplots(figsize=(5, 4))
-
-    if by_outcome:
-        colours = ["#9970ab", "#d6604d", "#1b7837", "#2166ac", 'k', '#fe9929', '#f768a1']
-        ax = sns.tsplot(data=duration, time="session", unit="trial", condition="rewarded", value="value",
-                        err_style="ci_band", ci=68, color=colours)
-        legend_dist = 1.
-    else:
-        ax = sns.tsplot(data=duration, time="session", unit="trial", condition="condition", value="value",
-                        err_style="ci_band", ci=68, color=colours)
-        legend_dist = 1.
-
-    plt.gca().xaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
-    ax.set(xlabel='Session', ylabel='Duration in food cup (s)')
-
-    if len(change_sessions) == 1:
-        ax.axvspan(change_sessions[0], rats_df['session'].max(), color='#cccccc', alpha=0.3)
-    elif len(change_sessions) == 2:
-        ax.axvspan(change_sessions[0], change_sessions[1]-1, color='#cccccc', alpha=0.3)
-    elif len(change_sessions) == 3:
-        ax.axvspan(change_sessions[0], change_sessions[1]-1, color='#cccccc', alpha=0.3)
-        ax.axvspan(change_sessions[2], rats_df['session'].max(), color='#cccccc', alpha=0.3)
-
-    if xlim is not None:
-        ax.set_xlim(xlim)
-
-    if ymax is not None:
-        ax.set_ylim(0, ymax)
-
-    sns.despine()
     plt.tight_layout()
-    plt.legend(bbox_to_anchor=(legend_dist, 1.))
+    handles, labels = ax.get_legend_handles_labels()
+    sortedhl = sorted(zip(handles, labels), key=lambda x: x[1])
+    plt.legend(*zip(*sortedhl), bbox_to_anchor=(1., 1.))
+
+    plt.tight_layout()
     if filepath is not None:
+        mkdirs(os.path.dirname(filepath))
         plt.savefig(filepath, bbox_inches='tight')
         plt.close()
     else:

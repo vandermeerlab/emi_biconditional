@@ -1,6 +1,94 @@
+import measurements as m
+from core import Experiment, Rat, TrialEpoch
+
+
+expt = Experiment(
+    name="201704",
+    cache_key="epoch",
+    trial_epochs=[
+        TrialEpoch("mags", start_idx=1, stop_idx=2),
+        TrialEpoch("baseline", start_idx=4, duration=-10),
+        TrialEpoch("baseline", start_idx=6, duration=-10),
+        TrialEpoch("light1", start_idx=4, stop_idx=5),
+        TrialEpoch("light2", start_idx=6, stop_idx=7),
+        TrialEpoch("sound1", start_idx=8, stop_idx=9),
+        TrialEpoch("sound2", start_idx=10, stop_idx=11),
+        TrialEpoch("trial1", start_idx=12, stop_idx=13),
+        TrialEpoch("trial2", start_idx=14, stop_idx=15),
+        TrialEpoch("trial3", start_idx=16, stop_idx=17),
+        TrialEpoch("trial4", start_idx=18, stop_idx=19),
+    ],
+    measurements=[m.Duration(), m.Count(), m.Latency(), m.AtLeastOne()],
+    rats=[
+        Rat('1', group="1"),
+        Rat('2', group="2"),
+        Rat('3', group="1"),
+        Rat('4', group="2"),
+        Rat('5', group="1"),
+        Rat('6', group="2"),
+        Rat('7', group="1"),
+        Rat('8', group="2"),
+    ],
+    magazine_session='!2016-10-18',
+)
+
+
+def add_datapoints(session, data, rat):
+
+    def add_data(cue, trial=None):
+        if trial is not None:
+            meta = {
+                "cue_type": cue[:-1],
+                "trial_type": trial[-1],
+                "rewarded": "rewarded" if trial[-1] in ("2", "4") else "unrewarded",
+                "cue": cue,
+            }
+            trial = data[trial]
+            cue = data[cue]
+            session.add_epoch_data(rat.rat_id, trial.intersect(cue), meta)
+        else:
+            meta = {
+                "cue_type": cue,
+                "trial_type": "",
+                "rewarded": "",
+                "cue": cue,
+            }
+            session.add_epoch_data(rat.rat_id, data[cue], meta)
+
+    if rat.group == "1":
+        add_data("light1", "trial1")
+        add_data("sound2", "trial1")
+        add_data("light1", "trial2")
+        add_data("sound1", "trial2")
+        add_data("light2", "trial3")
+        add_data("sound1", "trial3")
+        add_data("light2", "trial4")
+        add_data("sound2", "trial4")
+        add_data("baseline")
+
+    elif rat.group == "2":
+        add_data("light2", "trial1")
+        add_data("sound2", "trial1")
+        add_data("light2", "trial2")
+        add_data("sound1", "trial2")
+        add_data("light1", "trial3")
+        add_data("sound1", "trial3")
+        add_data("light1", "trial4")
+        add_data("sound2", "trial4")
+        add_data("baseline")
+
+
+expt.add_datapoints = add_datapoints
+expt.plot_all(change=[35, 46, 52])
+
+
+
+
+
 import os
+
 import nept
-from core import Rat, combine_rats
+from core import combine_rats, Rat
 from load_data import assign_medpc_label
 from plotting import plot_behavior, plot_duration
 
@@ -103,3 +191,34 @@ if 1:
     for i, rat in enumerate(rat_groups):
         filepath = os.path.join(output_filepath, filenames[i])
         plot_duration(df, rat, filepath, by_outcome=by_outcome, ymax=10.)
+
+
+    # def add_session_medpc(self, mags, pellets, lights1, lights2, sounds1, sounds2,
+    #                       n_unique=8, delay=5.02, tolerance=1e-08):
+    #     """Sorts cues into appropriate trials (1, 2, 3, 4), using specified delay between light and sound cues."""
+
+    #     session = Session(mags, pellets)
+
+    #     for trial in [1, 2, 3, 4]:
+    #         if self.light_trials[trial] == 'lights1':
+    #             light_cues = lights1
+    #         elif self.light_trials[trial] == 'lights2':
+    #             light_cues = lights2
+    #         if self.sound_trials[trial] == 'sounds1':
+    #             sound_cues = sounds1
+    #         elif self.sound_trials[trial] == 'sounds2':
+    #             sound_cues = sounds2
+
+    #         n_trials = 0
+    #         for light in light_cues:
+    #             for sound in sound_cues:
+    #                 if np.allclose(sound.start - light.stop, delay, atol=tolerance):
+    #                     session.add_trial(light, 'light', trial)
+    #                     session.add_trial(sound, 'sound', trial)
+    #                     n_trials += 1
+
+    #         for _ in range(n_unique - n_trials):
+    #             session.add_missing_trial('light', trial)
+    #             session.add_missing_trial('sound', trial)
+
+    #     self.sessions.append(session)

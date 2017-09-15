@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from core import Rat, combine_rats
+from core import combine_rats, Rat
 from load_data import load_biconditional_events_old, vdm_assign_label, remove_trial_events
 from plotting import plot_behavior
 
@@ -45,7 +45,7 @@ for rat, sessions, group in zip(rats, all_sessions, groups):
             rats_data = vdm_assign_label(events, min_n_trials=16)
         else:
             rats_data = vdm_assign_label(events)
-        data[rat].add_session(**rats_data, group=group)
+        data[rat].add_biconditional_session(**rats_data, group=group)
 
     n_sessions = len(data[rat].sessions)
 

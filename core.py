@@ -1,271 +1,295 @@
-from collections import defaultdict
+import os
+
+import nept
 import numpy as np
 import pandas as pd
-from broken_session import fix_missing_trials
+
+from load_data import assign_label
+from plotting import mkdirs, plot_behavior
+
+thisdir = os.path.dirname(os.path.realpath(__file__))
+
+
+class Experiment:
+
+    def __init__(self, name, cache_key, trial_epochs, measurements, rats, magazine_session,
+                 sessionfiles=None, add_datapoints=None):
+        self.name = name
+        self.cache_key = cache_key
+        self.trial_epochs = trial_epochs
+        self.measurements = measurements
+        self.rats = rats
+        self.magazine_session = magazine_session
+        self.add_datapoints = add_datapoints
+
+        if sessionfiles is None:
+            self.sessionfiles = []
+            for filename in sorted(os.listdir(self.data_dir)):
+                if filename != self.magazine_session and filename[0] == '!':
+                    self.sessionfiles.append(filename)
+        else:
+            self.sessionfiles = sessionfiles
+
+        self.df = None
+
+        mkdirs(self.cache_dir)
+        mkdirs(self.plot_dir)
+
+    @property
+    def cache_dir(self):
+        return os.path.join(thisdir, 'cache', 'cache', self.name + '-' + self.cache_key)
+
+    @property
+    def data_dir(self):
+        return os.path.join(thisdir, 'cache', 'data', self.name)
+
+    @property
+    def plot_dir(self):
+        return os.path.join(thisdir, 'plots', self.name)
+
+    def analyze(self):
+        if self.df is not None:
+            return
+
+        sessions = []
+        for i, filename in enumerate(self.sessionfiles):
+            cachefile = os.path.join(self.cache_dir, "%s.pkl" % (filename,))
+            if os.path.exists(cachefile):
+                print("Loading %s from cache" % (filename,))
+                sessions.append(pd.read_pickle(cachefile))
+                continue
+
+            session_data = nept.load_medpc(os.path.join(self.data_dir, filename),
+                                           assign_label(self.trial_epochs))
+            session = Session(i+1, self.measurements)
+
+            for rat in self.rats:
+                rat_data = session_data[rat.rat_id]
+                session.add_rat(rat.rat_id, rat_data["mags"])
+                self.add_datapoints(session, rat_data, rat)
+                session.check(rat.rat_id, rat_data)
+
+            sessions.append(session.to_df())
+            print("Saving %s to cache" % (filename,))
+            session.save(cachefile)
+
+        self.df = pd.concat(sessions, ignore_index=True)
+        return self.df
+
+    def plot_all(self, change=None, measure=None):
+        self.analyze()
+        for rat in self.rats:
+            self.plot_rat(rat, change=change, measure=measure, by_outcome=True)
+            self.plot_rat(rat, change=change, measure=measure, by_outcome=False)
+
+        self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=True)
+        self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=False)
+
+        group1 = [rat for rat in self.rats if rat.group == "1"]
+        self.plot_group(group1, label="group1", change=change, measure=measure, by_outcome=True)
+        self.plot_group(group1, label="group1", change=change, measure=measure, by_outcome=False)
+
+        group2 = [rat for rat in self.rats if rat.group == "2"]
+        self.plot_group(group2, label="group2", change=change, measure=measure, by_outcome=True)
+        self.plot_group(group2, label="group2", change=change, measure=measure, by_outcome=False)
+
+    def plot_rat(self, rat, by_outcome=True, measure=None, change=None):
+        self.analyze()
+
+        filename = "%s_%s%s.png" % (
+            rat.rat_id,
+            "behavior" if measure is None else measure.lower(),
+            "_outcome" if by_outcome else "")
+        filepath = os.path.join(self.plot_dir, filename)
+        plot_behavior(self.df, [rat], filepath, colours='deep', by_outcome=by_outcome,
+                      measure=measure, change_sessions=change)
+
+    def plot_group(self, rats, label, by_outcome=True, measure=None, change=None):
+        self.analyze()
+
+        filepath = os.path.join(self.plot_dir, "%s_%s%s.png" % (
+            label,
+            "behavior" if measure is None else measure.lower(),
+            "_outcome" if by_outcome else ""))
+        plot_behavior(self.df, rats, filepath, colours='deep', by_outcome=by_outcome, measure=measure, change_sessions=change)
+
+    def plot_feature(self, rat):
+        pass
 
 
 class Session:
-    def __init__(self, mags, pellets):
-        self.mags = mags
-        self.pellets = pellets
-        self.trials = []
+    def __init__(self, number, measurements):
+        self.number = number
+        self.measurements = measurements
+        self.epochs_of_interest = {}
+        self.data = []
+        self._df = None
 
-    def add_trial(self, epoch, cue, trial_type):
-        """Adds trial to session
-        epoch: nept.Epoch object
-        cue: str
-            Typically either 'light' or 'sound'
-        trial_type: int
-            Typically 1, 2, 3, or 4
-        """
-        cue_mag = epoch.intersect(self.mags)
+    def add_rat(self, rat_id, epoch_of_interest):
+        self._df = None
+        self.epochs_of_interest[rat_id] = epoch_of_interest
 
-        self.trials.append(
-            Trial(cue=cue,
-                  trial_type=trial_type,
-                  durations=np.sum(cue_mag.durations),
-                  numbers=cue_mag.n_epochs,
-                  latency=cue_mag.start - epoch.start if cue_mag.n_epochs > 0 else 10.0,
-                  responses=1 if cue_mag.n_epochs > 0 else 0))
+    def add_epoch_data(self, rat_id, epoch, info=None):
+        self._df = None
+        for measurement in self.measurements:
+            self.data.append(EpochDataPoint(
+                session_number=self.number,
+                rat_id=rat_id,
+                values=measurement(epoch, self.epochs_of_interest[rat_id]),
+                measure=measurement.label,
+                info=info,
+            ))
 
-    def add_missing_trial(self, cue, trial_type):
-        """Adds trial placeholders for missing trials.
-        cue: str
-            Typically either 'light' or 'sound'
-        trial_type: int
-            Typically 1, 2, 3, or 4
-        """
-        self.trials.append(
-            Trial(cue=cue,
-                  trial_type=trial_type,
-                  durations=np.nan,
-                  numbers=np.nan,
-                  latency=np.nan,
-                  responses=np.nan))
+    def add_binned_data(self, rat_id, epoch, binsize, info=None):
+        self._df = None
+
+        for trial, ep in enumerate(epoch):
+            starts = np.arange(ep.start, ep.stop, binsize)
+            binned_ep = nept.Epoch(starts, duration=np.ones(len(starts))*binsize)
+
+            for measurement in self.measurements:
+                self.data.append(BinnedDataPoint(
+                    session_number=self.number,
+                    trial_number=trial+1,
+                    rat_id=rat_id,
+                    values=measurement(binned_ep, self.epochs_of_interest[rat_id]),
+                    measure=measurement.label,
+                    binsize=binsize,
+                    info=info,
+                ))
+
+    def check(self, rat_id, rat_data):
+        print(rat_id, "session:", self.number)
+        for key in rat_data:
+            print(key, str(rat_data[key].n_epochs))
+
+    def save(self, path):
+        self.to_df().to_pickle(path)
+
+    def to_df(self):
+        # TODO: check that all datapoints are of the same type
+        if self._df is None:
+            self._df = pd.concat([dp.to_df() for dp in self.data], ignore_index=True)
+        return self._df
 
 
-class Trial:
-    def __init__(self, cue, trial_type, durations, numbers, latency, responses):
-        self.cue = cue
-        self.trial_type = trial_type
-        self.durations = durations
-        self.numbers = numbers
-        self.latency = latency
-        self.responses = responses
+    # def add_missing_trial(self, cue, trial_type):
+    #     """Adds trial placeholders for missing trials.
+    #
+    #     Parameters
+    #     ----------
+    #     cue: str
+    #         Typically either 'light' or 'sound'
+    #     trial_type: int
+    #         Typically 1, 2, 3, or 4
+    #     """
+    #     self.trials.append(
+    #         Trial(cue=cue,
+    #               trial_type=trial_type,
+    #               durations=np.nan,
+    #               numbers=np.nan,
+    #               latency=np.nan,
+    #               responses=np.nan))
 
 
-def add_all_trials(session, trial1, trial2, trial3, trial4, lights1, lights2, sounds1, sounds2,
-                   group, pre_cs, post_rewarded, post_unrewarded):
-        if group == 1:
-            for single_trial in trial1:
-                session.add_trial(single_trial.intersect(lights1), 'light', 1)
-                session.add_trial(single_trial.intersect(sounds2), 'sound', 1)
-            for single_trial in trial2:
-                session.add_trial(single_trial.intersect(lights1), 'light', 2)
-                session.add_trial(single_trial.intersect(sounds1), 'sound', 2)
-            for single_trial in trial3:
-                session.add_trial(single_trial.intersect(lights2), 'light', 3)
-                session.add_trial(single_trial.intersect(sounds1), 'sound', 3)
-            for single_trial in trial4:
-                session.add_trial(single_trial.intersect(lights2), 'light', 4)
-                session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
+class EpochDataPoint:
+    def __init__(self, session_number, rat_id, values, measure, info):
+        self.session_number = session_number
+        self.rat_id = rat_id
+        self.values = values
+        self.measure = measure
+        self.info = info
 
-        elif group == 2:
-            for single_trial in trial1:
-                session.add_trial(single_trial.intersect(lights2), 'light', 1)
-                session.add_trial(single_trial.intersect(sounds2), 'sound', 1)
-            for single_trial in trial2:
-                session.add_trial(single_trial.intersect(lights2), 'light', 2)
-                session.add_trial(single_trial.intersect(sounds1), 'sound', 2)
-            for single_trial in trial3:
-                session.add_trial(single_trial.intersect(lights1), 'light', 3)
-                session.add_trial(single_trial.intersect(sounds1), 'sound', 3)
-            for single_trial in trial4:
-                session.add_trial(single_trial.intersect(lights1), 'light', 4)
-                session.add_trial(single_trial.intersect(sounds2), 'sound', 4)
+    def to_df(self):
+        data = self.info.copy()
+        data.update({
+            "session": self.session_number,
+            "rat": self.rat_id,
+            "value": self.values,
+            "trial": np.arange(len(self.values))+1,
+            "measure": self.measure,
+        })
+        return pd.DataFrame(data)
 
-        if pre_cs is not None:
-            for single_pre in pre_cs:
-                session.add_trial(single_pre, 'pre CS', 5)
 
-        if post_rewarded is not None:
-            for single_post in post_rewarded:
-                session.add_trial(single_post, 'post US', 6)
+class BinnedDataPoint:
+    def __init__(self, session_number, trial_number, rat_id, values, measure, binsize, info):
+        self.session_number = session_number
+        self.trial_number = trial_number
+        self.rat_id = rat_id
+        self.values = values
+        self.measure = measure
+        self.binsize = binsize
+        self.info = info
 
-        if post_unrewarded is not None:
-            for single_post in post_unrewarded:
-                session.add_trial(single_post, 'post US', 7)
+    def to_df(self):
+        data = self.info.copy()
+        data.update({
+            "session": self.session_number,
+            "trial": self.trial_number,
+            "rat": self.rat_id,
+            "value": self.values,
+            "measure": self.measure,
+            "time_start": np.arange(len(self.values)) * self.binsize,
+            "duration": len(self.values) * self.binsize,
+        })
+        return pd.DataFrame(data)
+
+
+class TrialEpoch:
+    def __init__(self, name, start_idx, stop_idx=None, duration=None, min_duration=0.027):
+        assert stop_idx is not None or duration is not None, "Must specify one"
+        assert stop_idx is None or duration is None, "Cannot specify both"
+
+        self.name = name
+        self.start_idx = start_idx
+        self.stop_idx = stop_idx
+        self.duration = duration
+        self.min_duration = min_duration
+
+        #TODO: modify to allow for buffer before and after epoch
+
+    def load(self, data):
+        start = np.array(data[self.start_idx])
+
+        if self.stop_idx is not None:
+            stop = np.array(data[self.stop_idx])
+        else:
+            stop = start + self.duration
+
+        if self.duration is not None and self.duration < 0:
+            start, stop = stop, start
+
+        if len(start) > len(stop):
+            start = start[:-1]
+        epoch = nept.Epoch(start, stop-start)
+        return epoch[epoch.durations > self.min_duration]
 
 
 class Rat:
-    def __init__(self, rat_id, group1=None, group2=None):
+    def __init__(self, rat_id, group):
         self.rat_id = rat_id
-        self.group1 = group1
-        self.group2 = group2
-        self.sessions = []
-
-        self.sound_trials = {1: 'sounds2',
-                             2: 'sounds1',
-                             3: 'sounds1',
-                             4: 'sounds2'}
-
-        if group1 is not None and rat_id in group1:
-            self.light_trials = {1: 'lights1',
-                                 2: 'lights1',
-                                 3: 'lights2',
-                                 4: 'lights2'}
-
-        elif group2 is not None and rat_id in group2:
-            self.light_trials = {1: 'lights2',
-                                 2: 'lights2',
-                                 3: 'lights1',
-                                 4: 'lights1'}
-        else:
-            raise ValueError("rat id is incorrect. Should be in group1 or group2")
-
-    def add_session(self, mags, pellets, lights1, lights2, sounds1, sounds2, trial1, trial2, trial3, trial4,
-                    pre_cs=None, group=False, post_rewarded=None, post_unrewarded=None):
-        """Sorts cues into appropriate trials (1, 2, 3, 4), using intersect between trial and cue epochs."""
-        session = Session(mags, pellets)
-
-        if group not in [1, 2]:
-            raise ValueError("group must be either 1 or 2.")
-
-        add_all_trials(session, trial1, trial2, trial3, trial4,
-                       lights1, lights2, sounds1, sounds2, group, pre_cs, post_rewarded, post_unrewarded)
-
-        self.sessions.append(session)
-
-    def add_session_medpc(self, mags, pellets, lights1, lights2, sounds1, sounds2, n_unique=8, delay=5.02,
-                          tolerance=1e-08):
-        """Sorts cues into appropriate trials (1, 2, 3, 4), using specified delay between light and sound cues."""
-
-        session = Session(mags, pellets)
-
-        for trial in [1, 2, 3, 4]:
-            if self.light_trials[trial] == 'lights1':
-                light_cues = lights1
-            elif self.light_trials[trial] == 'lights2':
-                light_cues = lights2
-            if self.sound_trials[trial] == 'sounds1':
-                sound_cues = sounds1
-            elif self.sound_trials[trial] == 'sounds2':
-                sound_cues = sounds2
-
-            n_trials = 0
-            for light in light_cues:
-                for sound in sound_cues:
-                    if np.allclose(sound.start - light.stop, delay, atol=tolerance):
-                        session.add_trial(light, 'light', trial)
-                        session.add_trial(sound, 'sound', trial)
-                        n_trials += 1
-
-            for _ in range(n_unique - n_trials):
-                session.add_missing_trial('light', trial)
-                session.add_missing_trial('sound', trial)
-
-        self.sessions.append(session)
+        self.group = group
 
 
-def f_analyze(trial, measure):
-    """Extracts appropriate analysis metric.
+def fix_missing_trials(df):
+    """Replaces nan values with mean for that trial type
 
     Parameters
     ----------
-    trial: emi_biconditional Trial object
-    measure: str
-        One of 'durations', 'numbers', 'latency', or 'responses'
-
-    Returns
-    --------
-    output: analysis metric for a given trial
-
-    """
-    if measure not in ['durations', 'numbers', 'latency', 'responses']:
-        raise ValueError("measure must be one of 'durations', 'numbers', 'latency', or 'responses'")
-    if measure == 'durations':
-        output = trial.durations
-    if measure == 'numbers':
-        output = trial.numbers
-    if measure == 'latency':
-        output = trial.latency
-    if measure == 'responses':
-        output = trial.responses * 100.
-
-    return output
-
-
-def combine_rats(data, rats, n_sessions, only_sound=False):
-    """Combines behavioral measures from multiple rats, sessions and trials.
-
-    data: dict
-        With rat (str) as key, contains Rat objects for each rat
-    rats: list
-        With rat_id (str)
-    n_sessions: int
-    only_sound: boolean
-
-    Returns
-    -------
     df: pd.DataFrame
 
+    Note: this is a hack to handle sessions where there were fewer trials than expected.
+    This function finds those trials and replaces the values with the mean for that
+    trial type across the session.
+
     """
-    measures = ['durations', 'numbers', 'latency', 'responses']
-    together = dict(trial=[], rat=[], session=[], trial_type=[], rewarded=[],
-                    cue=[], value=[], measure=[], condition=[])
+    nan_idx = np.where(np.isnan(df['value']))[0]
+    for idx in nan_idx:
+        row = df.loc[idx]
+        value = df.loc[(df['rat'] == row['rat']) &
+                       (df['session'] == row['session']) &
+                       (df['condition'] == row['condition']) &
+                       (df['measure'] == row['measure'])].mean()['value']
 
-    for session in range(n_sessions):
-        for rat in rats:
-            condition_counts = defaultdict(lambda: 0)
-            for i, trial in enumerate(data[rat].sessions[session].trials):
-                condition = "%s %d" % (trial.cue, trial.trial_type)
-                for measure in measures:
-                    if not only_sound or trial.cue == 'sound':
-                        together['trial'].append("%s, %s, %d" % (rat, condition, condition_counts[condition]))
-                        together['rat'].append(rat)
-                        together['session'].append(session+1)
-                        together['trial_type'].append(trial.trial_type)
-                        together['rewarded'].append("%s %s" %
-                                                   (trial.cue, 'rewarded' if trial.trial_type % 2 == 0 else 'unrewarded'))
-                        together['cue'].append(trial.cue)
-                        together['condition'].append(condition)
-                        together['measure'].append(measure)
-                        together['value'].append(f_analyze(trial, measure))
-                condition_counts[condition] += 1
-
-    df = pd.DataFrame(data=together)
-
-    fix_missing_trials(df)
-    df = expand_32_trial_sessions(df)
-
-    return df
-
-
-def expand_32_trial_sessions(df):
-
-    def add_n_to_index(trial):
-        sp = trial.split(", ")
-        if sp[1] == "pre CS 5":
-            n = 32
-        elif sp[1] == "post CS 6" or sp[1] == "post CS 7":
-            n = 16
-        else:
-            n = 8
-        ix = int(sp[-1]) + n
-        return ", ".join(sp[:2] + [str(ix)])
-
-    sessions = np.unique(df['session'])
-    rats = np.unique(df['rat'])
-
-    for rat in rats:
-        for session in sessions:
-            single_session = df[df['session'] == session]
-            single_session = single_session[single_session['rat'] == rat]
-
-            n_events = len(single_session)
-
-            if (n_events / (4 * 4)) == 32:  # 4 (light, sound, pre-CS, post-CS) and 4 (measures).
-                single_session['trial'] = single_session['trial'].apply(add_n_to_index)
-                df = pd.concat([df, single_session], ignore_index=True)
-
-    return df
+        df.set_value(idx, 'value', value)

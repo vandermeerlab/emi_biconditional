@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from core import Rat, combine_rats
+from core import combine_rats, Rat
 from load_data import load_biconditional_events_general, vdm_assign_label
 from plotting import plot_behavior
 
@@ -38,7 +38,7 @@ for session in sessions:
                                                     np.array(events[missing_value[i][2]][missing_value[i][1]] - 10))
 
     rats_data = vdm_assign_label(events)
-    data[rat].add_session(**rats_data, group=2)
+    data[rat].add_biconditional_session(**rats_data, group=2)
 
 n_sessions = len(data[rat].sessions)
 
