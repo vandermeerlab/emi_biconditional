@@ -1,7 +1,7 @@
 import os
 import numpy as np
+import nept
 
-from core import Rat, combine_rats
 from load_data import load_biconditional_events_general, vdm_assign_label
 from plotting import plot_behavior
 
@@ -23,7 +23,7 @@ rat = 'R115'
 group2 = [rat]
 
 data = dict()
-data[rat] = Rat(rat, group2)
+data[rat] = nept.Rat(rat, group2)
 
 for session in sessions:
     if session[-26:] in c_photobeams:
@@ -38,11 +38,11 @@ for session in sessions:
                                                     np.array(events[missing_value[i][2]][missing_value[i][1]] - 10))
 
     rats_data = vdm_assign_label(events)
-    data[rat].add_session(**rats_data, group=2)
+    data[rat].add_biconditional_session(**rats_data, group=2)
 
 n_sessions = len(data[rat].sessions)
 
-df = combine_rats(data, [rat], n_sessions)
+df = nept.combine_rats(data, [rat], n_sessions)
 
 if 1:
     filename = rat + '_outcome_behavior.png'

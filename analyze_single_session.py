@@ -37,7 +37,7 @@ filename = os.path.join(data_filepath, '!' + session_id)
 rats_data = nept.load_medpc(filename, assign_label)
 
 for rat, group in zip(rats, groups):
-    data[rat].add_session(**rats_data[rat], group=group)
+    data[rat].add_long_feature_session(**rats_data[rat], group=group)
 
 n_sessions = len(data[rats[0]].sessions)
 

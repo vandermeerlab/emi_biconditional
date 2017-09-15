@@ -1,6 +1,5 @@
 import os
 import nept
-from core import Rat, combine_rats
 from load_data import assign_medpc_label
 from plotting import plot_behavior, plot_duration
 
@@ -31,7 +30,7 @@ if plot_extended:
 
 data = dict()
 for rat in rats:
-    data[rat] = Rat(rat, group1, group2)
+    data[rat] = nept.Rat(rat, group1, group2)
 
 broken_a = os.path.join(data_filepath, broken_sessions[0])
 broken_b = os.path.join(data_filepath, broken_sessions[1])
@@ -42,18 +41,18 @@ for rat in rats_data_a:
     for key in rats_data_a[rat]:
         rats_data_b[rat][key].join(rats_data_a[rat][key])
 for rat in rats:
-    data[rat].add_session_medpc(**rats_data_b[rat])
+    data[rat].add_medpc_session(**rats_data_b[rat])
 
 for session in sessions:
     rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_medpc_label)
 
     for rat in rats:
-        data[rat].add_session_medpc(**rats_data[rat])
+        data[rat].add_medpc_session(**rats_data[rat])
 
 n_sessions = len(data[rats[0]].sessions)
 only_sound = False
 
-df = combine_rats(data, rats, n_sessions, only_sound)
+df = nept.combine_rats(data, rats, n_sessions, only_sound)
 
 if 1:
     for by_outcome in [True, False]:

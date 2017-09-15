@@ -207,6 +207,55 @@ def assign_label_prepost(data, min_duration=0.027, epoch=10):
     return min_epoch_data
 
 
+def assign_occset_label(data, min_duration=0.027):
+    """Assigns events to proper labels.
+
+    Parameters
+    ----------
+    data: dict
+    min_duration: float
+
+    Returns
+    -------
+    rats_data: dict
+        With mags, pellets, lights1, sounds1, sounds2, trial1, trial2 as keys.
+        Each contains nept.Epoch objects
+
+    """
+    mag_start = np.array(data[1])
+    mag_end = np.array(data[2])
+    if len(mag_start) > len(mag_end):
+        mag_start = np.array(data[1][:-1])
+    pel_start = np.array(data[3])
+    pel_end = pel_start + 1
+    light1_start = np.array(data[4])
+    light1_end = np.array(data[5])
+    light2_start = np.array(data[6])
+    light2_end = np.array(data[7])
+    sound1_start = np.array(data[8])
+    sound1_end = np.array(data[9])
+    trial1_start = np.array(data[12])
+    trial1_end = np.array(data[13])
+    trial2_start = np.array(data[14])
+    trial2_end = np.array(data[15])
+
+    rats_data = dict()
+    rats_data['mags'] = nept.Epoch(mag_start, mag_end-mag_start)
+    rats_data['pellets'] = nept.Epoch(pel_start, pel_end-pel_start)
+    rats_data['lights1'] = nept.Epoch(light1_start, light1_end-light1_start)
+    rats_data['lights2'] = nept.Epoch(light2_start, light2_end-light2_start)
+    rats_data['sounds1'] = nept.Epoch(sound1_start, sound1_end-sound1_start)
+    rats_data['trial1'] = nept.Epoch(trial1_start, trial1_end-trial1_start)
+    rats_data['trial2'] = nept.Epoch(trial2_start, trial2_end-trial2_start)
+
+    min_epoch_data = dict()
+    for key in rats_data:
+        above_thresh_idx = rats_data[key].durations > min_duration
+        min_epoch_data[key] = rats_data[key][above_thresh_idx]
+
+    return min_epoch_data
+
+
 def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=10, min_n_trials=32, max_n_trials=32):
     """Assigns events to proper labels.
 

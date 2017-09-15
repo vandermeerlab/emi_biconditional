@@ -1,6 +1,6 @@
 import os
 import nept
-from core import Rat, combine_rats
+
 from load_data import assign_label
 from plotting import plot_behavior
 
@@ -23,17 +23,17 @@ group2 = ['R121', 'R119', 'R117']
 
 data = dict()
 for rat in rats:
-    data[rat] = Rat(rat, group1, group2)
+    data[rat] = nept.Rat(rat, group1, group2)
 
 for session in sessions:
     rats_data = nept.load_medpc(os.path.join(data_filepath, session), assign_label)
 
     for rat, group in zip(rats, groups):
-        data[rat].add_session(**rats_data[rat], group=group)
+        data[rat].add_biconditional_session(**rats_data[rat], group=group)
 
 n_sessions = len(data[rats[0]].sessions)
 
-df = combine_rats(data, rats, n_sessions)
+df = nept.combine_rats(data, rats, n_sessions)
 
 
 if 1:
