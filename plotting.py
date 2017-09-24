@@ -88,13 +88,19 @@ def plot_overtime(df, rats, filepath=None):
         rat_idx = rat_idx | (df['rat'] == rat.rat_id)
     rats_df = df[rat_idx]
 
-    df = add_col(df, "unit", "rat", "trial")
+    df = add_col(df, "unit", "rat", "trial", "session")
     g = sns.FacetGrid(data=df, col="duration", sharey=False, size=3, aspect=1.)
     g.map_dataframe(sns.tsplot, time="time_start", unit="unit", condition="cue", value="value",
                     err_style="ci_band", ci=68, color="deep")
 
+    ylim = 0
     for ax in g.axes[0]:
         ax.set_ylabel("Duration in food cup (s)")
+        if ax.get_ylim()[1] > ylim:
+            ylim = ax.get_ylim()[1]
+
+    for ax in g.axes[0]:
+        ax.set_ylim(0, ylim)
 
     plt.tight_layout()
     handles, labels = ax.get_legend_handles_labels()

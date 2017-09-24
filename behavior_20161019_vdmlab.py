@@ -1,7 +1,9 @@
 import os
 import numpy as np
+import nept
 
 from core import combine_rats, Rat
+
 from load_data import load_biconditional_events_old, vdm_assign_label, remove_trial_events
 from plotting import plot_behavior
 
@@ -34,7 +36,7 @@ group2 = ['8']
 
 for rat, sessions, group in zip(rats, all_sessions, groups):
     data = dict()
-    data[rat] = Rat(rat, group1, group2)
+    data[rat] = nept.Rat(rat, group1, group2)
 
     for session in sessions:
         events = load_biconditional_events_old(os.path.join(data_filepath, session.event_file))
@@ -45,11 +47,13 @@ for rat, sessions, group in zip(rats, all_sessions, groups):
             rats_data = vdm_assign_label(events, min_n_trials=16)
         else:
             rats_data = vdm_assign_label(events)
-        data[rat].add_biconditional_session(**rats_data, group=group)
+
+        data[rat].add_medpc_session(**rats_data, group=group)
+
 
     n_sessions = len(data[rat].sessions)
 
-    df = combine_rats(data, [rat], n_sessions)
+    df = nept.combine_rats(data, [rat], n_sessions)
 
     filename = 'vdmlab_trials_rat' + rat + '_behavior.png'
     filepath = os.path.join(output_filepath, filename)

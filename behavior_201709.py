@@ -100,7 +100,8 @@ binned_expt = Experiment(
         Rat('R162', group="2"),
     ],
     magazine_session='!2017-09-20',
-    sessionfiles=['!2017-09-23']
+    sessionfiles=['!2017-09-23',
+                  '!2017-09-24']
 )
 
 
@@ -138,5 +139,5 @@ plot_overtime(binned_df, rats=group2, filepath=filepath)
 filepath = os.path.join(binned_expt.plot_dir, 'all-rats_binned.png')
 plot_overtime(binned_df, rats=binned_expt.rats, filepath=filepath)
 
-# epoch_expt.plot_all(measure="Duration")
-# epoch_expt.plot_all()
+epoch_expt.plot_all(measure="Duration")
+epoch_expt.plot_all()
