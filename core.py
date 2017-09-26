@@ -80,18 +80,15 @@ class Experiment:
         self.analyze()
         for rat in self.rats:
             self.plot_rat(rat, change=change, measure=measure, by_outcome=True)
-            self.plot_rat(rat, change=change, measure=measure, by_outcome=False)
 
         self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=True)
         self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=False)
 
         group1 = [rat for rat in self.rats if rat.group == "1"]
         self.plot_group(group1, label="group1", change=change, measure=measure, by_outcome=True)
-        self.plot_group(group1, label="group1", change=change, measure=measure, by_outcome=False)
 
         group2 = [rat for rat in self.rats if rat.group == "2"]
         self.plot_group(group2, label="group2", change=change, measure=measure, by_outcome=True)
-        self.plot_group(group2, label="group2", change=change, measure=measure, by_outcome=False)
 
     def plot_rat(self, rat, by_outcome=True, measure=None, change=None):
         self.analyze()
@@ -101,7 +98,7 @@ class Experiment:
             "behavior" if measure is None else measure.lower(),
             "_outcome" if by_outcome else "")
         filepath = os.path.join(self.plot_dir, filename)
-        plot_behavior(self.df, [rat], filepath, colours='deep', by_outcome=by_outcome,
+        plot_behavior(self.df, [rat], filepath, by_outcome=by_outcome,
                       measure=measure, change_sessions=change)
 
     def plot_group(self, rats, label, by_outcome=True, measure=None, change=None):
@@ -111,7 +108,7 @@ class Experiment:
             label,
             "behavior" if measure is None else measure.lower(),
             "_outcome" if by_outcome else ""))
-        plot_behavior(self.df, rats, filepath, colours='deep', by_outcome=by_outcome, measure=measure, change_sessions=change)
+        plot_behavior(self.df, rats, filepath, by_outcome=by_outcome, measure=measure, change_sessions=change)
 
     def plot_feature(self, rat):
         pass
@@ -271,25 +268,25 @@ class Rat:
         self.rat_id = rat_id
         self.group = group
 
-
-def fix_missing_trials(df):
-    """Replaces nan values with mean for that trial type
-
-    Parameters
-    ----------
-    df: pd.DataFrame
-
-    Note: this is a hack to handle sessions where there were fewer trials than expected.
-    This function finds those trials and replaces the values with the mean for that
-    trial type across the session.
-
-    """
-    nan_idx = np.where(np.isnan(df['value']))[0]
-    for idx in nan_idx:
-        row = df.loc[idx]
-        value = df.loc[(df['rat'] == row['rat']) &
-                       (df['session'] == row['session']) &
-                       (df['condition'] == row['condition']) &
-                       (df['measure'] == row['measure'])].mean()['value']
-
-        df.set_value(idx, 'value', value)
+#
+# def fix_missing_trials(df):
+#     """Replaces nan values with mean for that trial type
+#
+#     Parameters
+#     ----------
+#     df: pd.DataFrame
+#
+#     Note: this is a hack to handle sessions where there were fewer trials than expected.
+#     This function finds those trials and replaces the values with the mean for that
+#     trial type across the session.
+#
+#     """
+#     nan_idx = np.where(np.isnan(df['value']))[0]
+#     for idx in nan_idx:
+#         row = df.loc[idx]
+#         value = df.loc[(df['rat'] == row['rat']) &
+#                        (df['session'] == row['session']) &
+#                        (df['condition'] == row['condition']) &
+#                        (df['measure'] == row['measure'])].mean()['value']
+#
+#         df.set_value(idx, 'value', value)

@@ -9,17 +9,15 @@ epoch_expt = Experiment(
     cache_key="epoch",
     trial_epochs=[
         TrialEpoch("mags", start_idx=1, stop_idx=2),
-        TrialEpoch("baseline", start_idx=4, duration=-10),
-        TrialEpoch("baseline", start_idx=6, duration=-10),
-        TrialEpoch("light1start", start_idx=4, duration=10),
         TrialEpoch("light1end", start_idx=5, duration=-10),
-        TrialEpoch("light2start", start_idx=6, duration=10),
         TrialEpoch("light2end", start_idx=7, duration=-10),
         TrialEpoch("sound1", start_idx=8, stop_idx=9),
         TrialEpoch("trial1", start_idx=12, stop_idx=13),
         TrialEpoch("trial2", start_idx=14, stop_idx=15),
         TrialEpoch("light1", start_idx=4, stop_idx=5),
         TrialEpoch("light2", start_idx=6, stop_idx=7),
+        TrialEpoch("baseline", start_idx=4, duration=-10),
+        TrialEpoch("baseline", start_idx=6, duration=-10),
     ],
     measurements=[m.Duration(), m.Count(), m.Latency(), m.AtLeastOne()],
     rats=[
@@ -59,20 +57,16 @@ def add_datapoints(session, data, rat):
             session.add_epoch_data(rat.rat_id, data[cue], meta)
 
     if rat.group == "1":
-        add_data("light1start", "trial1")
         add_data("light1end", "trial1")
-        add_data("sound1", "trial1")
-        add_data("light2start", "trial2")
         add_data("light2end", "trial2")
+        add_data("sound1", "trial1")
         add_data("sound1", "trial2")
         add_data("baseline")
 
     elif rat.group == "2":
-        add_data("light2start", "trial1")
         add_data("light2end", "trial1")
-        add_data("sound1", "trial1")
-        add_data("light1start", "trial2")
         add_data("light1end", "trial2")
+        add_data("sound1", "trial1")
         add_data("sound1", "trial2")
         add_data("baseline")
 
@@ -88,7 +82,7 @@ binned_expt = Experiment(
         TrialEpoch("light1", start_idx=4, stop_idx=5),
         TrialEpoch("light2", start_idx=6, stop_idx=7),
     ],
-    measurements=[m.Duration()],
+    measurements=[m.Count()],
     rats=[
         Rat('R155', group="1"),
         Rat('R156', group="2"),
@@ -100,8 +94,7 @@ binned_expt = Experiment(
         Rat('R162', group="2"),
     ],
     magazine_session='!2017-09-20',
-    sessionfiles=['!2017-09-23',
-                  '!2017-09-24']
+    # sessionfiles=['!2017-09-26']
 )
 
 
@@ -139,5 +132,10 @@ plot_overtime(binned_df, rats=group2, filepath=filepath)
 filepath = os.path.join(binned_expt.plot_dir, 'all-rats_binned.png')
 plot_overtime(binned_df, rats=binned_expt.rats, filepath=filepath)
 
+for rat in binned_expt.rats:
+    filepath = os.path.join(binned_expt.plot_dir, rat.rat_id + '_binned.png')
+    plot_overtime(binned_df, rats=[rat], filepath=filepath)
+
+epoch_expt.plot_all(measure="Count")
 epoch_expt.plot_all(measure="Duration")
 epoch_expt.plot_all()
