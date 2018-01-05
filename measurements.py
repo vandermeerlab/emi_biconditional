@@ -39,3 +39,13 @@ class Latency(Measurement):
             return occurrences.start - trial.start
         else:
             return trial.durations[0]
+
+
+class DurationPerSecond(Measurement):
+    def measure(self, trial, epoch_of_interest):
+        return np.sum(trial.intersect(epoch_of_interest).durations) / (trial.stop - trial.start)
+
+
+class CountPerSecond(Measurement):
+    def measure(self, trial, epoch_of_interest):
+        return trial.intersect(epoch_of_interest).n_epochs / (trial.stop - trial.start)

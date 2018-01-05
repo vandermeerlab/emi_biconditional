@@ -5,6 +5,7 @@ from core import Experiment, Rat, TrialEpoch
 
 epoch_expt = Experiment(
     name="test",
+    plot_key="",
     cache_key="",
     trial_epochs=[
         TrialEpoch("mags", start_idx=1, stop_idx=2),
@@ -30,7 +31,7 @@ epoch_expt = Experiment(
         Rat('7', group="1"),
         Rat('8', group="2"),
     ],
-    magazine_session='',
+    ignore_sessions='',
     sessionfiles=['!roborats']
 )
 

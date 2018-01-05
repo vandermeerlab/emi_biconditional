@@ -1,10 +1,12 @@
 import measurements as m
 from core import Experiment, Rat, TrialEpoch
 
+cached_data = True
 
 expt = Experiment(
     name="201701",
     cache_key="epoch",
+    plot_key="",
     trial_epochs=[
         TrialEpoch("mags", start_idx=1, stop_idx=2),
         TrialEpoch("baseline", start_idx=4, duration=-10),
@@ -20,16 +22,31 @@ expt = Experiment(
     ],
     measurements=[m.Duration(), m.Count(), m.Latency(), m.AtLeastOne()],
     rats=[
-        Rat('R114', group="1"),
-        Rat('R116', group="1"),
-        Rat('R117', group="2"),
-        Rat('R118', group="1"),
-        Rat('R119', group="2"),
-        Rat('R120', group="1"),
-        Rat('R121', group="2"),
+        Rat('R114', group="1", gender="male"),
+        Rat('R116', group="1", gender="male"),
+        Rat('R117', group="2", gender="male"),
+        Rat('R118', group="1", gender="male"),
+        Rat('R119', group="2", gender="male"),
+        Rat('R120', group="1", gender="male"),
+        Rat('R121', group="2", gender="male"),
     ],
-    magazine_session='!2017-01-17',
+    ignore_sessions=['!2017-01-17'],
 )
+
+colours = {'baseline, ': '#252525',
+           'light, rewarded': '#1f77b4',
+           'light1, rewarded': '#1f77b4',
+           'light2, rewarded': '#1f77b4',
+           'light, unrewarded': '#aec7e8',
+           'light1, unrewarded': '#aec7e8',
+           'light2, unrewarded': '#aec7e8',
+           'sound, rewarded': '#2ca02c',
+           'sound, unrewarded': '#98df8a',
+           'sound1, rewarded': '#2ca02c',
+           'sound1, unrewarded': '#98df8a',
+           'sound2, rewarded': '#e377c2',
+           'sound2, unrewarded': '#f7b6d2',
+           }
 
 
 def add_datapoints(session, data, rat):
@@ -76,6 +93,5 @@ def add_datapoints(session, data, rat):
         add_data("sound2", "trial4")
         add_data("baseline")
 
-
 expt.add_datapoints = add_datapoints
-expt.plot_all()
+expt.plot_all(cached_data=cached_data, colours=colours)

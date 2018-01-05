@@ -1,8 +1,10 @@
-session_id = 'RH01d1'
-session = 'RH01-2016-12-09'
+session_id = 'R115d16'
+session = 'R115-2017-02-02'
 
 species = 'rat'
 behavior = 'biconditional'
 experimenter = 'Emily Irvine'
 
 event_file = session + '-Events.nev'
+
+photobeam = 'zero'

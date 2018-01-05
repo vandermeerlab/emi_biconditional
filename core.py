@@ -1,5 +1,4 @@
 import os
-
 import nept
 import numpy as np
 import pandas as pd
@@ -12,23 +11,24 @@ thisdir = os.path.dirname(os.path.realpath(__file__))
 
 class Experiment:
 
-    def __init__(self, name, cache_key, trial_epochs, measurements, rats, magazine_session,
-                 sessionfiles=None, add_datapoints=None):
+    def __init__(self, name, cache_key, plot_key, trial_epochs, measurements, rats,
+                 sessionfiles=None, ignore_sessions=None, add_datapoints=None):
         self.name = name
         self.cache_key = cache_key
+        self.plot_key = plot_key
         self.trial_epochs = trial_epochs
         self.measurements = measurements
         self.rats = rats
-        self.magazine_session = magazine_session
+        self.ignore_sessions = ignore_sessions
         self.add_datapoints = add_datapoints
 
-        if sessionfiles is None:
+        if sessionfiles is not None:
+            self.sessionfiles = sessionfiles
+        else:
             self.sessionfiles = []
             for filename in sorted(os.listdir(self.data_dir)):
-                if filename != self.magazine_session and filename[0] == '!':
+                if filename not in self.ignore_sessions and filename[0] == '!':
                     self.sessionfiles.append(filename)
-        else:
-            self.sessionfiles = sessionfiles
 
         self.df = None
 
@@ -45,16 +45,16 @@ class Experiment:
 
     @property
     def plot_dir(self):
-        return os.path.join(thisdir, 'plots', self.name)
+        return os.path.join(thisdir, 'plots', self.name, self.plot_key)
 
-    def analyze(self):
+    def analyze(self, cached_data=True):
         if self.df is not None:
             return
 
         sessions = []
         for i, filename in enumerate(self.sessionfiles):
             cachefile = os.path.join(self.cache_dir, "%s.pkl" % (filename,))
-            if os.path.exists(cachefile):
+            if os.path.exists(cachefile) and cached_data:
                 print("Loading %s from cache" % (filename,))
                 sessions.append(pd.read_pickle(cachefile))
                 continue
@@ -74,44 +74,71 @@ class Experiment:
             session.save(cachefile)
 
         self.df = pd.concat(sessions, ignore_index=True)
+        self.df.isnull().values.any()
         return self.df
 
-    def plot_all(self, change=None, measure=None):
-        self.analyze()
+    def plot_all(self, change=None, measure=None, labels=None, colours=None, cached_data=True, grouped=True,
+                 diff_targets=True, filetype="png"):
+        self.analyze(cached_data=cached_data)
         for rat in self.rats:
-            self.plot_rat(rat, change=change, measure=measure, by_outcome=True)
+            if grouped:
+                self.plot_rat(rat, change=change, measure=measure, labels=labels, colours=colours, by_outcome=True,
+                              diff_targets=diff_targets, filetype=filetype)
+                self.plot_rat(rat, change=change, measure=measure, labels=labels, colours=colours, by_outcome=False,
+                              diff_targets=diff_targets, filetype=filetype)
+            else:
+                self.plot_rat(rat, change=change, measure=measure, labels=labels, colours=colours, by_outcome=False,
+                              diff_targets=diff_targets, filetype=filetype)
 
-        self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=True)
-        self.plot_group(self.rats, label="all-rats", change=change, measure=measure, by_outcome=False)
+        if grouped:
+            self.plot_group(self.rats, label="all-rats", change=change, measure=measure, labels=labels,
+                            colours=colours, by_outcome=True, diff_targets=diff_targets, filetype=filetype)
+            self.plot_group(self.rats, label="all-rats", change=change, measure=measure, labels=labels,
+                            colours=colours, by_outcome=False, diff_targets=diff_targets, filetype=filetype)
+        else:
+            self.plot_group(self.rats, label="all-rats", change=change, measure=measure, labels=labels,
+                            colours=colours, by_outcome=False, diff_targets=diff_targets, filetype=filetype)
 
         group1 = [rat for rat in self.rats if rat.group == "1"]
-        self.plot_group(group1, label="group1", change=change, measure=measure, by_outcome=True)
+        self.plot_group(group1, label="group1", change=change, measure=measure, labels=labels,
+                        colours=colours, by_outcome=True, diff_targets=diff_targets, filetype=filetype)
 
-        group2 = [rat for rat in self.rats if rat.group == "2"]
-        self.plot_group(group2, label="group2", change=change, measure=measure, by_outcome=True)
+        if any(rat.group == "2" for rat in self.rats):
+            group2 = [rat for rat in self.rats if rat.group == "2"]
+            self.plot_group(group2, label="group2", change=change, measure=measure, labels=labels,
+                            colours=colours, by_outcome=True, diff_targets=diff_targets, filetype=filetype)
 
-    def plot_rat(self, rat, by_outcome=True, measure=None, change=None):
+        males = [rat for rat in self.rats if rat.gender == "male"]
+        self.plot_group(males, label="males", change=change, measure=measure, labels=labels,
+                        colours=colours, by_outcome=True, diff_targets=diff_targets, filetype=filetype)
+
+        if any(rat.gender == "female" for rat in self.rats):
+            females = [rat for rat in self.rats if rat.gender == "female"]
+            self.plot_group(females, label="females", change=change, measure=measure, labels=labels,
+                            colours=colours, by_outcome=True, diff_targets=diff_targets, filetype=filetype)
+
+    def plot_rat(self, rat, by_outcome=True, measure=None, labels=None, colours=None, change=None,
+                 diff_targets=False, filetype="png"):
         self.analyze()
 
-        filename = "%s_%s%s.png" % (
+        filename = "%s_%s%s."% (
             rat.rat_id,
             "behavior" if measure is None else measure.lower(),
-            "_outcome" if by_outcome else "")
+            "_outcome" if by_outcome else "") + filetype
         filepath = os.path.join(self.plot_dir, filename)
-        plot_behavior(self.df, [rat], filepath, by_outcome=by_outcome,
-                      measure=measure, change_sessions=change)
+        plot_behavior(self.df, [rat], filepath, by_outcome=by_outcome, measure=measure,
+                      labels=labels, colours=colours, change_sessions=change, diff_targets=diff_targets)
 
-    def plot_group(self, rats, label, by_outcome=True, measure=None, change=None):
+    def plot_group(self, rats, label, by_outcome=True, measure=None, labels=None, colours=None, change=None,
+                   diff_targets=False, filetype="png"):
         self.analyze()
 
-        filepath = os.path.join(self.plot_dir, "%s_%s%s.png" % (
+        filepath = os.path.join(self.plot_dir, "%s_%s%s."% (
             label,
             "behavior" if measure is None else measure.lower(),
-            "_outcome" if by_outcome else ""))
-        plot_behavior(self.df, rats, filepath, by_outcome=by_outcome, measure=measure, change_sessions=change)
-
-    def plot_feature(self, rat):
-        pass
+            "_outcome" if by_outcome else "")) + filetype
+        plot_behavior(self.df, rats, filepath, by_outcome=by_outcome, measure=measure,
+                      labels=labels, colours=colours, change_sessions=change, diff_targets=diff_targets)
 
 
 class Session:
@@ -126,15 +153,19 @@ class Session:
         self._df = None
         self.epochs_of_interest[rat_id] = epoch_of_interest
 
-    def add_epoch_data(self, rat_id, epoch, info=None):
+    def add_epoch_data(self, rat_id, epoch, info=None, n_missing=0):
         self._df = None
         for measurement in self.measurements:
+            values = measurement(epoch, self.epochs_of_interest[rat_id])
+            if n_missing > 0:
+                values = np.hstack((values, np.ones(n_missing) * np.nan))
             self.data.append(EpochDataPoint(
                 session_number=self.number,
                 rat_id=rat_id,
-                values=measurement(epoch, self.epochs_of_interest[rat_id]),
+                values=values,
                 measure=measurement.label,
                 info=info,
+                missing=n_missing
             ))
 
     def add_binned_data(self, rat_id, epoch, binsize, info=None):
@@ -160,6 +191,30 @@ class Session:
         for key in rat_data:
             print(key, str(rat_data[key].n_epochs))
 
+    def replace_nan_with_mean(self):
+        """Replaces nan values with mean for that trial type
+
+        Parameters
+        ----------
+        df: pd.DataFrame
+
+        Note: this is a hack to handle sessions where there were fewer trials than expected
+        or dealing with expanding sessions when some sessions contain different number of trials.
+        This function finds those trials and replaces the values with the mean for that
+        trial type across the session.
+
+        """
+        print("replacing nans with mean...")
+        nan_idx = np.where(np.isnan(self._df['value']))[0]
+        for idx in nan_idx:
+            row = self._df.loc[idx]
+            value = self._df.loc[(self._df['rat'] == row['rat']) &
+                           (self._df['session'] == row['session']) &
+                           (self._df['cue'] == row['cue']) &
+                           (self._df['measure'] == row['measure'])].mean()['value']
+
+            self._df.set_value(idx, 'value', value)
+
     def save(self, path):
         self.to_df().to_pickle(path)
 
@@ -167,30 +222,13 @@ class Session:
         # TODO: check that all datapoints are of the same type
         if self._df is None:
             self._df = pd.concat([dp.to_df() for dp in self.data], ignore_index=True)
+        if self._df.isnull().values.any():
+            self.replace_nan_with_mean()
         return self._df
 
 
-    # def add_missing_trial(self, cue, trial_type):
-    #     """Adds trial placeholders for missing trials.
-    #
-    #     Parameters
-    #     ----------
-    #     cue: str
-    #         Typically either 'light' or 'sound'
-    #     trial_type: int
-    #         Typically 1, 2, 3, or 4
-    #     """
-    #     self.trials.append(
-    #         Trial(cue=cue,
-    #               trial_type=trial_type,
-    #               durations=np.nan,
-    #               numbers=np.nan,
-    #               latency=np.nan,
-    #               responses=np.nan))
-
-
 class EpochDataPoint:
-    def __init__(self, session_number, rat_id, values, measure, info):
+    def __init__(self, session_number, rat_id, values, measure, info, missing):
         self.session_number = session_number
         self.rat_id = rat_id
         self.values = values
@@ -244,7 +282,7 @@ class TrialEpoch:
         self.duration = duration
         self.min_duration = min_duration
 
-        #TODO: modify to allow for buffer before and after epoch
+        # TODO: modify to allow for buffer before and after epoch
 
     def load(self, data):
         start = np.array(data[self.start_idx])
@@ -263,30 +301,14 @@ class TrialEpoch:
         return epoch[epoch.durations > self.min_duration]
 
 
+class TrialEpochFromEpoch:
+    def __init__(self, name, epoch):
+        self.name = name
+        self.epoch = epoch
+
+
 class Rat:
-    def __init__(self, rat_id, group):
+    def __init__(self, rat_id, group, gender="male"):
         self.rat_id = rat_id
         self.group = group
-
-#
-# def fix_missing_trials(df):
-#     """Replaces nan values with mean for that trial type
-#
-#     Parameters
-#     ----------
-#     df: pd.DataFrame
-#
-#     Note: this is a hack to handle sessions where there were fewer trials than expected.
-#     This function finds those trials and replaces the values with the mean for that
-#     trial type across the session.
-#
-#     """
-#     nan_idx = np.where(np.isnan(df['value']))[0]
-#     for idx in nan_idx:
-#         row = df.loc[idx]
-#         value = df.loc[(df['rat'] == row['rat']) &
-#                        (df['session'] == row['session']) &
-#                        (df['condition'] == row['condition']) &
-#                        (df['measure'] == row['measure'])].mean()['value']
-#
-#         df.set_value(idx, 'value', value)
+        self.gender = gender

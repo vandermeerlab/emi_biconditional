@@ -62,7 +62,7 @@ def assign_label(trial_epochs):
         for trial_epoch in trial_epochs:
             epoch = trial_epoch.load(data)
             if trial_epoch.name in trial_data:
-                trial_data[trial_epoch.name].join(epoch)
+                trial_data[trial_epoch.name] = trial_data[trial_epoch.name].join(epoch)
             else:
                 trial_data[trial_epoch.name] = epoch
         return trial_data
@@ -330,125 +330,6 @@ def vdm_assign_label(events, pellet_duration=1, trial_duration=25, cue_duration=
     return rats_data
 
 
-def load_biconditional_events_old(filename):
-    """Loads biconditional events. Corrects keys labels.
-
-    Parameters
-    ----------
-    filename: str
-
-    Returns
-    -------
-    events: dict
-
-    """
-    labels = dict()
-    labels['start'] = 'Starting Recording'
-    labels['stop'] = 'Stopping Recording'
-    labels['light1_on'] = 'cue_on'
-    labels['light1_off'] = 'cue_off'
-    labels['light2_on'] = 'house_on'
-    labels['light2_off'] = 'house_off'
-    labels['sound1_on'] = 'tone_on'
-    labels['sound1_off'] = 'tone_off'
-    labels['sound2_on'] = 'noise_on'
-    labels['sound2_off'] = 'noise_off'
-    labels['trial1_start'] = 'trial1_start'
-    labels['trial2_start'] = 'trial2_start'
-    labels['trial3_start'] = 'trial3_start'
-    labels['trial4_start'] = 'trial4_start'
-    labels['feeder'] = 'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).'
-    labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).'
-    labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
-
-    events = nept.load_events(filename, labels)
-    events = correct_sounds(events)
-
-    return events
-
-
-def load_biconditional_events_general(filename, photobeam, missing_start=True):
-    """Loads biconditional events. Corrects keys labels.
-
-    Parameters
-    ----------
-    filename: str
-    photobeam: str
-        Either 'zero' or 'c'
-    missing_start: bool
-
-    Returns
-    -------
-    events: dict
-
-    """
-
-    labels = dict()
-    labels['start'] = 'Starting Recording'
-    labels['stop'] = 'Stopping Recording'
-    labels['light1_on'] = 'light1_on'
-    labels['light1_off'] = 'light1_off'
-    labels['light2_on'] = 'light2_on'
-    labels['light2_off'] = 'light2_off'
-    labels['sound1_on'] = 'sound1_on'
-    labels['sound1_off'] = 'sound1_off'
-    labels['sound2_on'] = 'sound2_on'
-    labels['sound2_off'] = 'sound2_off'
-    labels['trial1_start'] = 'trial1_start'
-    labels['trial2_start'] = 'trial2_start'
-    labels['trial3_start'] = 'trial3_start'
-    labels['trial4_start'] = 'trial4_start'
-    labels['feeder'] = 'TTL Output on AcqSystem1_0 board 0 port 0 value (0x0020).'
-    if photobeam == 'zero':
-        labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0008).'
-        labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0000).'
-    elif photobeam == 'c':
-        labels['pb_off'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x0004).'
-        labels['pb_on'] = 'TTL Input on AcqSystem1_0 board 0 port 1 value (0x000C).'
-    else:
-        raise ValueError("must specify which photobeam used")
-
-    events = nept.load_events(filename, labels)
-    events = correct_sounds(events)
-
-    return events
-
-
-def correct_sounds(events):
-    """Corrects on/off labels for sound cues.
-
-    Parameters
-    ----------
-    events: dict
-
-    Returns
-    -------
-    renamed_events: dict
-        With appropriate keys.
-
-    """
-    renamed_events = dict()
-    renamed_events['start'] = np.unique(events['start'])
-    renamed_events['stop'] = np.unique(events['stop'])
-    renamed_events['light1_on'] = np.unique(events['light1_on'])
-    renamed_events['light1_off'] = np.unique(events['light1_off'])
-    renamed_events['light2_on'] = np.unique(events['light2_on'])
-    renamed_events['light2_off'] = np.unique(events['light2_off'])
-    renamed_events['sound1_on'] = np.unique(events['sound1_off'])
-    renamed_events['sound1_off'] = np.unique(events['sound1_on'])
-    renamed_events['sound2_on'] = np.unique(events['sound2_off'])
-    renamed_events['sound2_off'] = np.unique(events['sound2_on'])
-    renamed_events['trial1_start'] = np.unique(events['trial1_start'])
-    renamed_events['trial2_start'] = np.unique(events['trial2_start'])
-    renamed_events['trial3_start'] = np.unique(events['trial3_start'])
-    renamed_events['trial4_start'] = np.unique(events['trial4_start'])
-    renamed_events['feeder'] = np.unique(events['feeder'])
-    renamed_events['pb_on'] = np.unique(events['pb_on'])
-    renamed_events['pb_off'] = np.unique(events['pb_off'])
-
-    return renamed_events
-
-
 def remove_trial_events(events, remove_trial, trial_duration=25):
     """Removes light and sound events during a given trial.
 
@@ -501,3 +382,38 @@ def remove_trial_events(events, remove_trial, trial_duration=25):
         filtered[cue] = np.delete(events[cue], remove_idx)
 
     return filtered
+
+
+def correct_sounds(events):
+    """Corrects on/off labels for sound cues.
+
+    Parameters
+    ----------
+    events: dict
+
+    Returns
+    -------
+    renamed_events: dict
+        With appropriate keys.
+
+    """
+    renamed_events = dict()
+    renamed_events['start'] = np.unique(events['start'])
+    renamed_events['stop'] = np.unique(events['stop'])
+    renamed_events['light1_on'] = np.unique(events['light1_on'])
+    renamed_events['light1_off'] = np.unique(events['light1_off'])
+    renamed_events['light2_on'] = np.unique(events['light2_on'])
+    renamed_events['light2_off'] = np.unique(events['light2_off'])
+    renamed_events['sound1_on'] = np.unique(events['sound1_off'])
+    renamed_events['sound1_off'] = np.unique(events['sound1_on'])
+    renamed_events['sound2_on'] = np.unique(events['sound2_off'])
+    renamed_events['sound2_off'] = np.unique(events['sound2_on'])
+    renamed_events['trial1_start'] = np.unique(events['trial1_start'])
+    renamed_events['trial2_start'] = np.unique(events['trial2_start'])
+    renamed_events['trial3_start'] = np.unique(events['trial3_start'])
+    renamed_events['trial4_start'] = np.unique(events['trial4_start'])
+    renamed_events['feeder'] = np.unique(events['feeder'])
+    renamed_events['pb_on'] = np.unique(events['pb_on'])
+    renamed_events['pb_off'] = np.unique(events['pb_off'])
+
+    return renamed_events
