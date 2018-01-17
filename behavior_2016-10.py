@@ -3,9 +3,9 @@ import nept
 import measurements as m
 from core import Experiment, Rat, TrialEpoch
 
-cached_data = False
+cached_data = True
 
-for plot_extended in [True, False]:
+for plot_extended in [False]:
     extended_sessions = ['!2016-12-06', '!2016-12-07a', '!2016-12-07b', '!2016-12-08', '!2016-12-09']
     extended_rats = [Rat('5', group="1"),
                      Rat("8", group="2")]
@@ -17,7 +17,8 @@ for plot_extended in [True, False]:
         Rat('5', group="1"),
         Rat('6', group="2"),
         Rat('7', group="1"),
-        Rat('8', group="2")]
+        Rat('8', group="2")
+    ]
     magazine = ['!2016-10-18']
     ignore = magazine + ['!2016-10-19a1']
 
@@ -35,8 +36,8 @@ for plot_extended in [True, False]:
             TrialEpoch("sound2", start_idx=10, stop_idx=11),
         ],
         measurements=[m.Duration(), m.Count(), m.Latency(), m.AtLeastOne()],
-        rats=[extended_rats if not plot_extended else all_rats][0],
-        ignore_sessions=[ignore + extended_sessions if not plot_extended else ignore][0],
+        rats=[extended_rats if plot_extended else all_rats][0],
+        ignore_sessions=[ignore if plot_extended else ignore + extended_sessions][0],
     )
 
     colours = {'baseline, ': '#252525',
@@ -108,13 +109,13 @@ for plot_extended in [True, False]:
                 add_data_notrials("light1", "sound1", trial_num="2", n_missing=2)
                 add_data_notrials("light2", "sound1", trial_num="3", n_missing=2)
                 add_data_notrials("light2", "sound2", trial_num="4", n_missing=1)
-                add_data("baseline", n_missing=12)
+                add_data("baseline", n_missing=6)
             elif rat.group == "2":
                 add_data_notrials("light1", "sound2", trial_num="4", n_missing=1)
                 add_data_notrials("light1", "sound1", trial_num="3", n_missing=2)
                 add_data_notrials("light2", "sound1", trial_num="2", n_missing=2)
                 add_data_notrials("light2", "sound2", trial_num="1", n_missing=1)
-                add_data("baseline", n_missing=12)
+                add_data("baseline", n_missing=6)
         else:
             if rat.group == "1":
                 add_data_notrials("light1", "sound2", trial_num="1")
@@ -131,16 +132,22 @@ for plot_extended in [True, False]:
 
 
     expt.add_datapoints = add_datapoints
-    if plot_extended:
-        change = [35.5, 46.5, 51.5]
-        expt.analyze(cached_data=cached_data)
-        for rat in expt.rats:
-            expt.plot_rat(rat, change=change, colours=colours, by_outcome=True)
-            expt.plot_rat(rat, change=change, colours=colours, by_outcome=False)
-            expt.plot_rat(rat, measure="Duration", change=change, colours=colours)
-            expt.plot_rat(rat, measure="Count", change=change, colours=colours)
-    else:
-        change = [35.5, 46.5]
-        expt.plot_all(cached_data=cached_data, change=change, colours=colours)
-        expt.plot_all(measure="Duration", cached_data=cached_data, change=change, colours=colours)
-        expt.plot_all(measure="Count", cached_data=cached_data, change=change, colours=colours)
+    # if plot_extended:
+    #     change = [35.5, 46.5, 51.5]
+    #     expt.analyze(cached_data=cached_data)
+    #     for rat in expt.rats:
+    #         expt.plot_rat(rat, change=change, colours=colours, by_outcome=True)
+    #         expt.plot_rat(rat, change=change, colours=colours, by_outcome=False)
+    #         expt.plot_rat(rat, measure="Duration", change=change, colours=colours)
+    #         expt.plot_rat(rat, measure="Count", change=change, colours=colours)
+    # else:
+    #     change = [35.5, 46.5]
+    #     expt.plot_all(cached_data=cached_data, change=change, colours=colours)
+    #     expt.plot_all(measure="Duration", cached_data=cached_data, change=change, colours=colours)
+    #     expt.plot_all(measure="Count", cached_data=cached_data, change=change, colours=colours)
+
+    expt.analyze(cached_data=cached_data)
+    for rat in expt.rats:
+        expt.plot_rat(rat, measure="Duration", colours=colours, by_outcome=True)
+        expt.plot_rat(rat, measure="Duration", colours=colours, by_outcome=False)
+    expt.plot_group(expt.rats, label="all-rats", measure="Duration", colours=colours, by_outcome=True)

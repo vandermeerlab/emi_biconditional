@@ -49,10 +49,10 @@ def plot_behavior(df, rats, filepath=None, labels=None, colours=None, by_outcome
     if measure is not None:
         rats_df = rats_df.loc[rats_df.measure == measure]
 
-    if by_outcome and diff_targets:
-        rats_df = add_col(rats_df, "unit", "cue_type", "rat", "trial")
-        rats_df = add_col(rats_df, "condition", "cue", "rewarded")
-    elif by_outcome and not diff_targets:
+    if by_outcome and not diff_targets:
+        rats_df = add_col(rats_df, "unit", "cue", "rat", "trial")
+        rats_df = add_col(rats_df, "condition", "cue_type", "rewarded")
+    elif by_outcome and diff_targets:
         rats_df = add_col(rats_df, "unit", "cue_type", "rat", "trial")
         rats_df = add_col(rats_df, "condition", "cue_type", "rewarded")
     else:
@@ -79,7 +79,7 @@ def plot_behavior(df, rats, filepath=None, labels=None, colours=None, by_outcome
 
     handles, labels = plt.gca().get_legend_handles_labels()
     sortedhl = sorted(zip(handles, labels), key=lambda x: x[1])
-    plt.gca().legend(*zip(*sortedhl), bbox_to_anchor=(1., 1.))
+    plt.gca().legend(*zip(*sortedhl), bbox_to_anchor=(1., 0.95))
 
     plt.tight_layout()
 

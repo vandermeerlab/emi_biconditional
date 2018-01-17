@@ -1,12 +1,13 @@
 import measurements as m
 from core import Experiment, Rat, TrialEpoch
 
-cached_data = True
+cached_data = False
 
 # rats = ["R099", "R095", "R088", "R094", "R098", "R096", "R101", "R090"]
 # TODO: fix plot to reflect missing data from session 2 (2016-04-06)
 
 counterconditioning_sessions = ['!2016-04-25', '!2016-04-26', '!2016-04-27', '!2016-04-28', '!2016-04-29']
+test_session = ['!2016-04-30']
 
 expt = Experiment(
     name="201604",
@@ -32,7 +33,7 @@ expt = Experiment(
         Rat('7', group="1"),
         Rat('8', group="1"),
     ],
-    ignore_sessions=counterconditioning_sessions,
+    ignore_sessions=counterconditioning_sessions + test_session,
 )
 
 colours = {'baseline, ': '#252525',

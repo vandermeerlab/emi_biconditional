@@ -4,13 +4,14 @@ import measurements as m
 from core import Experiment, Rat, TrialEpoch
 from plotting import plot_overtime
 
-cached_data = False
+cached_data = True
 
 plot_occset = False
 plot_counterconditioning = False
 plot_biconditional = False
 plot_altoccset = False
-plot_jointoccset = True
+plot_jointoccset = False
+plot_together = True
 
 magazine_session = ['!2017-09-20']
 occset_tone = ["!2017-09-%02d"
@@ -198,33 +199,39 @@ if plot_occset:
         group1 = [rat for rat in binned_expt.rats if rat.group == "1"]
         filepath = os.path.join(binned_expt.plot_dir, 'group1_' +
                                 measure.lower() + '_binned.png')
-        plot_overtime(binned_df, rats=group1, filepath=filepath, measure=measure,
-                      labels=labels, colours=overtime_colours)
+        # plot_overtime(binned_df, rats=group1, filepath=filepath, measure=measure,
+        #               labels=labels, colours=overtime_colours)
 
         group2 = [rat for rat in binned_expt.rats if rat.group == "2"]
         filepath = os.path.join(binned_expt.plot_dir, 'group2_' +
                                 measure.lower() + '_binned.png')
-        plot_overtime(binned_df, rats=group2, filepath=filepath, measure=measure,
-                      labels=labels, colours=overtime_colours)
+        # plot_overtime(binned_df, rats=group2, filepath=filepath, measure=measure,
+        #               labels=labels, colours=overtime_colours)
 
         filepath = os.path.join(binned_expt.plot_dir, 'all-rats_' +
                                 measure.lower() + '_binned.png')
-        plot_overtime(binned_df, rats=binned_expt.rats, filepath=filepath, measure=measure,
-                      labels=labels, colours=overtime_colours)
+        # plot_overtime(binned_df, rats=binned_expt.rats, filepath=filepath, measure=measure,
+        #               labels=labels, colours=overtime_colours)
 
         for rat in binned_expt.rats:
             filepath = os.path.join(binned_expt.plot_dir, rat.rat_id + '_' +
                                     measure.lower() + '_binned.png')
-            plot_overtime(binned_df, rats=[rat], filepath=filepath, measure=measure,
-                          labels=labels, colours=overtime_colours)
+            # plot_overtime(binned_df, rats=[rat], filepath=filepath, measure=measure,
+            #               labels=labels, colours=overtime_colours)
 
     change = [16.5, 32.5, 44]
 
-    epoch_expt.plot_all(cached_data=cached_data, measure="Count", labels=["Number of entries"],
-                        colours=conditioning_colours, change=change)
-    epoch_expt.plot_all(cached_data=cached_data, measure="Duration", labels=["Duration in food cup (s)"],
-                        colours=conditioning_colours, change=change)
-    epoch_expt.plot_all(cached_data=cached_data, colours=conditioning_colours, change=change)
+    # epoch_expt.plot_all(cached_data=cached_data, measure="Count", labels=["Number of entries"],
+    #                     colours=conditioning_colours, change=change)
+    # epoch_expt.plot_all(cached_data=cached_data, measure="Duration", labels=["Duration in food cup (s)"],
+    #                     colours=conditioning_colours, change=change)
+    # epoch_expt.plot_all(cached_data=cached_data, colours=conditioning_colours, change=change)
+
+    epoch_expt.analyze(cached_data=cached_data)
+    for rat in epoch_expt.rats:
+        epoch_expt.plot_rat(rat, measure="Duration", colours=conditioning_colours, change=change, by_outcome=True)
+    epoch_expt.plot_group(epoch_expt.rats, label="all-rats", measure="Duration",
+                          colours=conditioning_colours, change=change, by_outcome=True)
 
 
 # Counterconditioning
@@ -492,8 +499,8 @@ if plot_biconditional:
         for rat in binned_expt.rats:
             filepath = os.path.join(binned_expt.plot_dir, rat.rat_id + '_' +
                                     measure.lower() + '_binned.png')
-            plot_overtime(binned_df, rats=[rat], filepath=filepath, measure=measure,
-                          labels=labels, colours=overtime_colours)
+            # plot_overtime(binned_df, rats=[rat], filepath=filepath, measure=measure,
+            #               labels=labels, colours=overtime_colours)
 
     # epoch_expt.plot_all(cached_data=cached_data, change=change, measure="Count", labels=["Number of entries"],
     #                     colours=conditioning_colours)
@@ -501,9 +508,15 @@ if plot_biconditional:
     #                     colours=conditioning_colours)
     # epoch_expt.plot_all(cached_data=cached_data, change=change, colours=conditioning_colours)
 
+    # epoch_expt.analyze(cached_data=cached_data)
+    # for rat in epoch_expt.rats:
+    #     epoch_expt.plot_rat(rat, colours=conditioning_colours, by_outcome=False)
+
     epoch_expt.analyze(cached_data=cached_data)
     for rat in epoch_expt.rats:
-        epoch_expt.plot_rat(rat, colours=conditioning_colours, by_outcome=False)
+        epoch_expt.plot_rat(rat, measure="Duration", colours=conditioning_colours, by_outcome=True)
+    epoch_expt.plot_group(epoch_expt.rats, label="all-rats", measure="Duration",
+                          colours=conditioning_colours, by_outcome=True)
 
 
 # Alternating occasion setting
@@ -769,4 +782,104 @@ if plot_jointoccset:
     # expt.plot_all(cached_data=cached_data, colours=conditioning_colours)
     expt.analyze(cached_data=cached_data)
     for rat in expt.rats:
-        expt.plot_rat(rat, colours=conditioning_colours, by_outcome=False)
+        expt.plot_rat(rat, measure="Duration", colours=conditioning_colours, by_outcome=True)
+    expt.plot_group(expt.rats, label="all-rats", measure="Duration", colours=conditioning_colours, by_outcome=True)
+
+
+# Biconditional and joint occasion setting
+expt = Experiment(
+    name="201709",
+    cache_key="epoch",
+    plot_key="together-biconditional",
+    trial_epochs=[
+        TrialEpoch("mags", start_idx=1, stop_idx=2),
+        TrialEpoch("light1end", start_idx=5, duration=-10),
+        TrialEpoch("light2end", start_idx=7, duration=-10),
+        TrialEpoch("sound1", start_idx=8, stop_idx=9),
+        TrialEpoch("sound2", start_idx=10, stop_idx=11),
+        TrialEpoch("trial1", start_idx=12, stop_idx=13),
+        TrialEpoch("trial2", start_idx=14, stop_idx=15),
+        TrialEpoch("trial3", start_idx=16, stop_idx=17),
+        TrialEpoch("trial4", start_idx=18, stop_idx=19),
+        TrialEpoch("light1", start_idx=4, stop_idx=5),
+        TrialEpoch("light2", start_idx=6, stop_idx=7),
+        TrialEpoch("baseline", start_idx=4, duration=-10),
+        TrialEpoch("baseline", start_idx=6, duration=-10),
+    ],
+    measurements=[m.Duration(), m.Count(), m.Latency(), m.AtLeastOne()],
+    rats=[
+        Rat('R155', group="1", gender="male"),
+        Rat('R156', group="2", gender="female"),
+        Rat('R157', group="2", gender="male"),
+        Rat('R158', group="1", gender="female"),
+        Rat('R159', group="2", gender="male"),
+        Rat('R160', group="1", gender="female"),
+        Rat('R161', group="1", gender="male"),
+        Rat('R162', group="2", gender="female"),
+    ],
+    ignore_sessions=magazine_session + counterconditioning_sessions + biconditional_sessions,
+    sessionfiles=biconditional_sessions + jointoccset_sessions
+)
+
+
+def add_datapoints(session, data, rat):
+
+    def add_data(cue, trial=None, n_missing=0):
+        if trial is not None:
+            meta = {
+                "cue_type": cue[:5],
+                "trial_type": trial[-1],
+                "rewarded": "rewarded" if trial == "trial2" or trial == "trial4" else "unrewarded",
+                "cue": cue,
+            }
+            trial = data[trial]
+            cue = data[cue]
+            session.add_epoch_data(rat.rat_id, trial.intersect(cue), meta, n_missing)
+        else:
+            meta = {
+                "cue_type": cue,
+                "trial_type": "",
+                "rewarded": "",
+                "cue": cue,
+            }
+            session.add_epoch_data(rat.rat_id, data[cue], meta, n_missing)
+
+    conditioning_colours = {'baseline, ': '#252525',
+                            'light, rewarded': '#1f77b4',
+                            'light, unrewarded': '#aec7e8',
+                            'sound, rewarded': '#2ca02c',
+                            'sound, unrewarded': '#98df8a'
+                            }
+
+    if rat.group == "1":
+        add_data("light1end", "trial1")
+        add_data("light2end", "trial2")
+        add_data("light2end", "trial3")
+        add_data("light1end", "trial4")
+        add_data("sound1", "trial1")
+        add_data("sound1", "trial2")
+        add_data("sound2", "trial3")
+        add_data("sound2", "trial4")
+        add_data("baseline")
+
+    elif rat.group == "2":
+        add_data("light2end", "trial1")
+        add_data("light1end", "trial2")
+        add_data("light1end", "trial3")
+        add_data("light2end", "trial4")
+        add_data("sound1", "trial1")
+        add_data("sound1", "trial2")
+        add_data("sound2", "trial3")
+        add_data("sound2", "trial4")
+        add_data("baseline")
+
+if plot_together:
+    change = [16]
+    expt.add_datapoints = add_datapoints
+    # expt.plot_all(cached_data=cached_data, colours=conditioning_colours)
+    expt.analyze(cached_data=cached_data)
+    for rat in expt.rats:
+        expt.plot_rat(rat, change=change, measure="Duration", colours=conditioning_colours, by_outcome=True)
+        expt.plot_rat(rat, change=change, measure="Duration", colours=conditioning_colours, by_outcome=False)
+    expt.plot_group(expt.rats, change=change, label="all-rats", measure="Duration",
+                    colours=conditioning_colours, by_outcome=True)
